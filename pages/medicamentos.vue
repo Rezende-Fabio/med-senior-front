@@ -22,6 +22,10 @@
                 <v-sheet class="ma-2 pa-2">
                     <h2>Medicamentos</h2>
                 </v-sheet>
+                <div v-if="alert === true" class="alert">
+                    <v-alert :type="typeAlert" :title="titleAtlert" :text="textAlert"></v-alert>
+                </div>
+
                 <div class="d-flex justify-center mb-6 bg-surface-variant">
                     <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'calories', order: 'asc' }]"
                         class="elevation-1">
@@ -87,9 +91,10 @@
                                         <v-sheet>
                                             <v-card-text class="text-h5 mb-10 break-title">
                                                 <div>
-                                                  <h5>Tem certeza que deseja excluir o(a) medicação {{ editedItem.nome }}?</h5>
+                                                    <h5>Tem certeza que deseja excluir o(a) medicação {{ editedItem.nome }}?
+                                                    </h5>
                                                 </div>
-                                              </v-card-text>
+                                            </v-card-text>
                                         </v-sheet>
                                         <v-sheet class="ma-2 pa-2">
                                             <div class="d-flex justify-space-between mb-4">
@@ -137,6 +142,10 @@ const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/tod
 const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
 const dialog = ref(false);
 const dialogDelete = ref(false);
+const titleAtlert = ref("");
+const textAlert = ref("");
+const typeAlert = ref("");
+const alert = ref(false);
 
 const headers = [
     {
@@ -162,7 +171,7 @@ const editedItem = ref({
     name: "",
     descricao: "",
     modoAdm: "",
-    idosoCodigo: ""
+    idosoId: ""
 });
 
 const defaultItem = ref({
@@ -208,11 +217,18 @@ const deleteItemConfirm = () => {
         body: JSON.stringify(editedItem.value)
     })
         .then((response) => {
-            console.log('Resposta do servidor obtida');
+            typeAlert.value = "success";
+            titleAtlert.value = "Sucesso";
+            textAlert.value = "Medicação excluida com sucesso!";
+            alert.value = true;
+            dismissAlert();
             updateItemList();
         })
         .catch((error) => {
-            console.error('Não foi possível criar um novo item');
+            typeAlert.value = "error";
+            titleAtlert.value = "Erro";
+            textAlert.value = "Não foi possível excluir a medicação!";
+            alert.value = true;
             console.log(error);
         });
     closeDelete();
@@ -238,11 +254,18 @@ const save = () => {
             body: JSON.stringify(editedItem.value)
         })
             .then((response) => {
-                console.log('Resposta do servidor obtida');
+                typeAlert.value = "success";
+                titleAtlert.value = "Sucesso";
+                textAlert.value = "Medicação alterada com sucesso!";
+                alert.value = true;
+                dismissAlert();
                 updateItemList();
             })
             .catch((error) => {
-                console.error('Não foi possível criar um novo item');
+                typeAlert.value = "error";
+                titleAtlert.value = "Erro";
+                textAlert.value = "Não foi possível alterar a medicação!";
+                alert.value = true;
                 console.log(error);
             });
     } else {
@@ -250,20 +273,27 @@ const save = () => {
             method: 'POST',
             body: JSON.stringify(editedItem.value)
         })
-            .then((response) => {
-                console.log('Resposta do servidor obtida');
-                updateItemList();
-            })
-            .catch((error) => {
-                console.error('Não foi possível criar um novo item');
-                console.log(error);
-            });
+        .then((response) => {
+            typeAlert.value = "success";
+            titleAtlert.value = "Sucesso";
+            textAlert.value = "Medicação incluida com sucesso!";
+            alert.value = true;
+            dismissAlert();
+            updateItemList();
+        })
+        .catch((error) => {
+            typeAlert.value = "error";
+            titleAtlert.value = "Erro";
+            textAlert.value = "Não foi possível incluir a medicação!";
+            alert.value = true;
+            console.log(error);
+        });
     }
     close();
 };
 
 function updateItemList() {
-    const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/T8K5G8'));
+    const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'));
     desserts.value = [];
     data.value.forEach(element => {
         var row = {
@@ -274,6 +304,15 @@ function updateItemList() {
         }
         desserts.value.push(row);
     });
+}
+
+function dismissAlert() {
+    setTimeout(() => {
+        typeAlert.value = "";
+        titleAtlert.value = "";
+        textAlert.value = "";
+        alert.value = false;
+    }, 5000);
 }
 
 initialize();
@@ -322,5 +361,9 @@ initialize();
 
 .break-text {
     white-space: normal;
+}
+
+.alert {
+    margin: 1rem;
 }
 </style>
