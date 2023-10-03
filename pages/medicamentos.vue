@@ -49,35 +49,36 @@
                                             <v-container>
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="editedItem.name"
+                                                        <v-text-field v-model="novoMedicamento.nome"
                                                             label="Nome do Medicamento"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-textarea v-model="editedItem.calories"
+                                                        <v-textarea v-model="novoMedicamento.descricao"
                                                             label="Descrição"></v-textarea>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-select v-model="editedItem.fat" :items="items"
+                                                        <v-select v-model="novoMedicamento.modoAdm" :items="items"
                                                             label="Modo de Administração (ml/qtd)"></v-select>
-
                                                     </v-row>
                                                 </v-col>
                                             </v-container>
                                         </v-card-text>
 
                                         <v-card-actions>
-                                            <div class="d-flex justify-space-between mb-4"  style="width: 100%;">
-                                            <v-sheet>
-                                                <v-btn color="blue-darken-1" class="btn-bk-cancel" variant="text" @click="close">
-                                                    Cancelar
-                                                </v-btn>
-                                            </v-sheet>
-                                            <v-sheet>
-                                                <v-btn color="blue-darken-1" variant="text" class="btn-bk-new" @click="save">
-                                                    Salvar
-                                                </v-btn>
-                                            </v-sheet>
-                                        </div>
+                                            <div class="d-flex justify-space-between mb-4" style="width: 100%;">
+                                                <v-sheet>
+                                                    <v-btn color="blue-darken-1" class="btn-bk-cancel" variant="text"
+                                                        @click="close">
+                                                        Cancelar
+                                                    </v-btn>
+                                                </v-sheet>
+                                                <v-sheet>
+                                                    <v-btn color="blue-darken-1" variant="text" class="btn-bk-new"
+                                                        @click="save">
+                                                        Salvar
+                                                    </v-btn>
+                                                </v-sheet>
+                                            </div>
                                         </v-card-actions>
                                     </v-card>
                                 </v-dialog>
@@ -119,193 +120,140 @@
     </v-main>
 </template>
 
-<script setup>
+<script setup >
 import {
     VDataTable,
     VDataTableServer,
     VDataTableVirtual,
 } from "vuetify/labs/VDataTable";
+import { ref } from 'vue';
 
-</script>
+const URL_SERVER = "http://localhost:5000/";
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/T8K5G8'));
 
-<script>
-export default {
-    data: () => ({
-        items: ['Comprimido', 'Gotas', 'Líquido', 'Pomada'],
-        dialog: false,
-        dialogDelete: false,
-        headers: [
-            {
-                title: 'Nome Medicamento',
-                align: 'start',
-                key: 'name',
-            },
-            { title: 'Descrição', key: 'descricao' },
-            { title: 'Ml/Qtd', key: 'ml/qtd' },
-            { title: 'Ações', key: 'actions', sortable: false },
-        ],
-        desserts: [],
-        editedIndex: -1,
-        editedItem: {
-            name: '',
-            calories: '',
-            fat: '',
-            carbs: 0,
-            protein: 0,
-        },
-        defaultItem: {
-            name: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
-        },
-    }),
+const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
+const dialog = ref(false);
+const dialogDelete = ref(false);
 
-    computed: {
-        formTitle() {
-            return this.editedIndex === -1 ? 'Cadastrar Medicamento' : 'Editar Medicamento'
-        },
+const headers = [
+    {
+        title: 'Nome Medicamento',
+        align: 'start',
+        key: 'name',
     },
+    { title: 'Descrição', key: 'descricao' },
+    { title: 'Ml/Qtd', key: 'mlqtd' },
+    { title: 'Ações', key: 'actions', sortable: false },
+];
 
-    watch: {
-        dialog(val) {
-            val || this.close()
-        },
-        dialogDelete(val) {
-            val || this.closeDelete()
-        },
-    },
+const desserts = ref([]);
 
-    created() {
-        this.initialize()
-    },
+const editedIndex = ref(-1);
+const editedItem = ref({
+    name: '',
+    calories: '',
+    fat: '',
+    carbs: 0,
+    protein: 0,
+});
 
-    methods: {
-        initialize() {
-            this.desserts = [
-                {
-                    name: 'Frozen Yogurt',
-                    calories: 159,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0,
-                },
-                {
-                    name: 'Ice cream sandwich',
-                    calories: 237,
-                    fat: 9.0,
-                    carbs: 37,
-                    protein: 4.3,
-                },
-                {
-                    name: 'Eclair',
-                    calories: 262,
-                    fat: 16.0,
-                    carbs: 23,
-                    protein: 6.0,
-                },
-                {
-                    name: 'Cupcake',
-                    calories: 305,
-                    fat: 3.7,
-                    carbs: 67,
-                    protein: 4.3,
-                },
-                {
-                    name: 'Gingerbread',
-                    calories: 356,
-                    fat: 16.0,
-                    carbs: 49,
-                    protein: 3.9,
-                },
-                {
-                    name: 'Jelly bean',
-                    calories: 375,
-                    fat: 0.0,
-                    carbs: 94,
-                    protein: 0.0,
-                },
-                {
-                    name: 'Lollipop',
-                    calories: 392,
-                    fat: 0.2,
-                    carbs: 98,
-                    protein: 0,
-                },
-                {
-                    name: 'Honeycomb',
-                    calories: 408,
-                    fat: 3.2,
-                    carbs: 87,
-                    protein: 6.5,
-                },
-                {
-                    name: 'Donut',
-                    calories: 452,
-                    fat: 25.0,
-                    carbs: 51,
-                    protein: 4.9,
-                },
-                {
-                    name: 'KitKat',
-                    calories: 518,
-                    fat: 26.0,
-                    carbs: 65,
-                    protein: 7,
-                },
-            ]
-        },
+const defaultItem = ref({
+    name: '',
+    calories: 0,
+    fat: 0,
+    carbs: 0,
+    protein: 0,
+});
 
-        editItem(item) {
-            this.editedIndex = this.desserts.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
-        },
+const formTitle = computed(() => {
+    return editedIndex.value === -1 ? 'Cadastrar Medicamento' : 'Editar Medicamento';
+});
 
-        deleteItem(item) {
-            this.editedIndex = this.desserts.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialogDelete = true
-        },
+const initialize = () => {
+    desserts.value = [];
+    data.value.forEach(element => {
+        var row = {
+            name: element.nome,
+            descricao: element.descricao,
+            mlqtd: element.modoAdm
+        }
 
-        deleteItemConfirm() {
-            this.desserts.splice(this.editedIndex, 1)
-            this.closeDelete()
-        },
+        desserts.value.push(row);
+    });
+};
 
-        close() {
-            this.dialog = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
-            })
-        },
+const editItem = (item) => {
+    editedIndex.value = desserts.value.indexOf(item);
+    editedItem.value = { ...item };
+    dialog.value = true;
+};
 
-        closeDelete() {
-            this.dialogDelete = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
-            })
-        },
+const deleteItem = (item) => {
+    editedIndex.value = desserts.value.indexOf(item);
+    editedItem.value = { ...item };
+    dialogDelete.value = true;
+};
 
-        save() {
-            if (this.editedIndex > -1) {
-                Object.assign(this.desserts[this.editedIndex], this.editedItem)
-            } else {
-                this.desserts.push(this.editedItem)
-            }
-            this.close()
-        },
-    },
+const deleteItemConfirm = () => {
+    desserts.value.splice(editedIndex.value, 1);
+    closeDelete();
+};
+
+const close = () => {
+    dialog.value = false;
+    editedItem.value = { ...defaultItem.value };
+    editedIndex.value = -1;
+};
+
+const closeDelete = () => {
+    dialogDelete.value = false;
+    editedItem.value = { ...defaultItem.value };
+    editedIndex.value = -1;
+};
+
+const novoMedicamento = ref({
+    nome: "",
+    modoAdm: "",
+    descricao: "",
+    idosoCodigo: "T8K5G8"
+});
+
+const save = () => {
+    $fetch(URL_SERVER + 'medicacao', {
+        method: 'POST',
+        body: JSON.stringify(novoMedicamento.value)
+    })
+        .then((response) => {
+            console.log('Resposta do servidor obtida');
+            updateItemList();
+        })
+        .catch((error) => {
+            console.error('Não foi possível criar um novo item');
+            console.log(error);
+        });
+    close();
+};
+
+function updateItemList () {
+    const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/T8K5G8'));
+    desserts.value = [];
+    data.value.forEach(element => {
+        var row = {
+            name: element.nome,
+            descricao: element.descricao,
+            mlqtd: element.modoAdm
+        }
+        desserts.value.push(row);
+    });
 }
+
+initialize();
 </script>
+
 
 <style>
 .custom-header {
     background-color: white;
-    /* Defina a cor de fundo para rosa ou a cor desejada */
 }
 
 .div-main {
@@ -337,7 +285,8 @@ export default {
     background-color: rgb(242, 59, 59) !important;
     color: rgb(255, 255, 255) !important;
 }
-.btn-bk-new{
+
+.btn-bk-new {
     background-color: rgb(70, 155, 55) !important;
     color: rgb(255, 255, 255) !important;
 }
