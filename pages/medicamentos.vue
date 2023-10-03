@@ -49,15 +49,15 @@
                                             <v-container>
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="novoMedicamento.nome"
+                                                        <v-text-field v-model="editedItem.nome"
                                                             label="Nome do Medicamento"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-textarea v-model="novoMedicamento.descricao"
+                                                        <v-textarea v-model="editedItem.descricao"
                                                             label="Descrição"></v-textarea>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-select v-model="novoMedicamento.modoAdm" :items="items"
+                                                        <v-select v-model="editedItem.modoAdm" :items="items"
                                                             label="Modo de Administração (ml/qtd)"></v-select>
                                                     </v-row>
                                                 </v-col>
@@ -85,8 +85,11 @@
                                 <v-dialog v-model="dialogDelete" max-width="550px">
                                     <v-card class="card-delete">
                                         <v-sheet>
-                                            <v-card-title class="text-h5 mb-10">Tem certeza que deseja
-                                                excluir?</v-card-title>
+                                            <v-card-text class="text-h5 mb-10 break-title">
+                                                <div>
+                                                  <h5>Tem certeza que deseja excluir o(a) medicação {{ editedItem.nome }}?</h5>
+                                                </div>
+                                              </v-card-text>
                                         </v-sheet>
                                         <v-sheet class="ma-2 pa-2">
                                             <div class="d-flex justify-space-between mb-4">
@@ -129,7 +132,7 @@ import {
 import { ref } from 'vue';
 
 const URL_SERVER = "http://localhost:5000/";
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/T8K5G8'));
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'));
 
 const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
 const dialog = ref(false);
@@ -137,12 +140,17 @@ const dialogDelete = ref(false);
 
 const headers = [
     {
+        title: "ID",
+        key: "id",
+        align: ' d-none'
+    },
+    {
         title: 'Nome Medicamento',
         align: 'start',
-        key: 'name',
+        key: 'nome',
     },
     { title: 'Descrição', key: 'descricao' },
-    { title: 'Ml/Qtd', key: 'mlqtd' },
+    { title: 'Ml/Qtd', key: 'modoAdm' },
     { title: 'Ações', key: 'actions', sortable: false },
 ];
 
@@ -150,11 +158,11 @@ const desserts = ref([]);
 
 const editedIndex = ref(-1);
 const editedItem = ref({
-    name: '',
-    calories: '',
-    fat: '',
-    carbs: 0,
-    protein: 0,
+    id: "",
+    name: "",
+    descricao: "",
+    modoAdm: "",
+    idosoCodigo: ""
 });
 
 const defaultItem = ref({
@@ -173,11 +181,11 @@ const initialize = () => {
     desserts.value = [];
     data.value.forEach(element => {
         var row = {
-            name: element.nome,
+            id: element.id,
+            nome: element.nome,
             descricao: element.descricao,
-            mlqtd: element.modoAdm
+            modoAdm: element.modoAdm
         }
-
         desserts.value.push(row);
     });
 };
@@ -195,7 +203,18 @@ const deleteItem = (item) => {
 };
 
 const deleteItemConfirm = () => {
-    desserts.value.splice(editedIndex.value, 1);
+    $fetch(URL_SERVER + `medicacao/${editedItem.value.id}`, {
+        method: 'DELETE',
+        body: JSON.stringify(editedItem.value)
+    })
+        .then((response) => {
+            console.log('Resposta do servidor obtida');
+            updateItemList();
+        })
+        .catch((error) => {
+            console.error('Não foi possível criar um novo item');
+            console.log(error);
+        });
     closeDelete();
 };
 
@@ -211,37 +230,47 @@ const closeDelete = () => {
     editedIndex.value = -1;
 };
 
-const novoMedicamento = ref({
-    nome: "",
-    modoAdm: "",
-    descricao: "",
-    idosoCodigo: "T8K5G8"
-});
-
 const save = () => {
-    $fetch(URL_SERVER + 'medicacao', {
-        method: 'POST',
-        body: JSON.stringify(novoMedicamento.value)
-    })
-        .then((response) => {
-            console.log('Resposta do servidor obtida');
-            updateItemList();
+    console.log(editedIndex);
+    if (editedIndex.value > -1) {
+        $fetch(URL_SERVER + `medicacao/${editedItem.value.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(editedItem.value)
         })
-        .catch((error) => {
-            console.error('Não foi possível criar um novo item');
-            console.log(error);
-        });
+            .then((response) => {
+                console.log('Resposta do servidor obtida');
+                updateItemList();
+            })
+            .catch((error) => {
+                console.error('Não foi possível criar um novo item');
+                console.log(error);
+            });
+    } else {
+        $fetch(URL_SERVER + 'medicacao', {
+            method: 'POST',
+            body: JSON.stringify(editedItem.value)
+        })
+            .then((response) => {
+                console.log('Resposta do servidor obtida');
+                updateItemList();
+            })
+            .catch((error) => {
+                console.error('Não foi possível criar um novo item');
+                console.log(error);
+            });
+    }
     close();
 };
 
-function updateItemList () {
+function updateItemList() {
     const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/T8K5G8'));
     desserts.value = [];
     data.value.forEach(element => {
         var row = {
-            name: element.nome,
+            id: element.id,
+            nome: element.nome,
             descricao: element.descricao,
-            mlqtd: element.modoAdm
+            modoAdm: element.modoAdm
         }
         desserts.value.push(row);
     });
@@ -289,5 +318,9 @@ initialize();
 .btn-bk-new {
     background-color: rgb(70, 155, 55) !important;
     color: rgb(255, 255, 255) !important;
+}
+
+.break-text {
+    white-space: normal;
 }
 </style>

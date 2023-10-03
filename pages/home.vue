@@ -3,7 +3,9 @@
         <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
         <v-divider></v-divider>
         <v-list style="height: 80%;" class="d-flex flex-column justify-space-between" nav>
-            <v-list-item prepend-icon="mdi-pill" title="MEDICAMENTOS" value=""></v-list-item>
+            <NuxtLink to="/medicamentos">
+                <v-list-item prepend-icon="mdi-pill" title="MEDICAMENTOS" value=""></v-list-item>
+            </NuxtLink>
             <v-list-item prepend-icon="mdi-calendar" title="CONSULTAS" value=""></v-list-item>
             <v-list-item prepend-icon="mdi-file" title="PRONTUÁRIO" value=""></v-list-item>
         </v-list>
@@ -17,7 +19,7 @@
                 Emergência
             </v-btn>
         </v-app-bar>
-        <h1>OPA</h1>
+        <h1>TESTE</h1>
     </v-main>
 </template>
 
