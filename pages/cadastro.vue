@@ -27,6 +27,11 @@
                     <v-col cols="12" md="8">
                         <v-text-field label="E-mail" :rules="[rules.required, rules.email]" v-model="form.email" />
                     </v-col>
+
+                    
+                    <v-col cols="12" md="8">
+                        <v-text-field label="Telefone" messages="Formato: XXXXXXX-XXXX" :rules="[rules.required, rules.telefone]" v-model="form.telefone"/>
+                    </v-col>
                 
 
                 <div class="container-row-cadastro">
@@ -90,6 +95,7 @@ export default {
                 min: value => value.length >= 8 || 'Minimo de 8 caracteres',
                 date: value => /^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/\d{4}$/.test(value) || 'Data inválida',
                 email: value => /.+@.+\..+/.test(value) || 'E-mail deve ser valido',
+                telefone: value => /\d{7}-\d{4}$/.test(value) || 'Telefone deve ser válido'
             }
         }
     },
@@ -104,7 +110,7 @@ export default {
 
                 data = {
                     nome: this.form.nome,
-                    telefone: "11941419565",
+                    telefone: this.form.telefone,
                     dataNasc: convertDateToDatetime(this.form.dataNasc),
                     email: this.form.email,
                     senha: this.form.senha
