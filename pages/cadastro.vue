@@ -1,65 +1,71 @@
 <template>
-    <v-container>
-        <v-form @submit.prevent="handlePostNewUser">
-            <v-container>
-                <h2>
+    <v-sheet class="d-flex flex-wrap container-main">
+        <v-sheet class="flex-1-0 ma-2 pa-2 container-image align-center">
+            <img class="img" src="~/assets/cadastro_img.png">
+        </v-sheet>
+
+        <v-sheet class="flex-1-0 ma-2 pa-2 container-form">
+            <v-form @submit.prevent="handlePostNewUser" class="form-cadastro">
+                
+                <h1 style="margin-bottom: 15px;">
                     Cadastro
-                </h2>
-                <v-row>
-                    <v-col cols="12" md="4">
+                </h1>
+              
+                    <v-col cols="10" md="8">
                         <v-text-field label="Nome" v-model="form.nome" :rules="[rules.required,]" />
                     </v-col>
-                </v-row>
+                
 
-                <v-row>
-                    <v-col cols="12" md="4">
+                
+                    <v-col cols="12" md="8">
                         <v-text-field label="Data de nascimento" messages="Formato: dd/mm/yyyy" v-model="form.dataNasc"
                             :rules="[rules.required, rules.date]" />
                     </v-col>
-                </v-row>
+               
 
-                <v-row>
-                    <v-col cols="12" md="4">
+              
+                    <v-col cols="12" md="8">
                         <v-text-field label="E-mail" :rules="[rules.required, rules.email]" v-model="form.email" />
                     </v-col>
-                </v-row>
+                
 
-                <v-row>
-                    <v-col cols="12" md="2">
+                <div class="container-row-cadastro">
+                    <v-col cols="6" md="4">
                         <v-combobox label="Você é Cuidador ou Idoso?" v-model="form.tipo" :items="['Cuidador', 'Idoso']"
                             :rules="[rules.required]" />
                     </v-col>
-                    <v-col cols="12" md="2">
+                    <v-col cols="6" md="4">
                         <v-text-field label="Código" :rules="form.tipo == 'Cuidador' ? [rules.required,] : ''"
                             :disabled="form.tipo == 'Idoso' ? true : false" v-model="form.codigo" />
                     </v-col>
-                </v-row>
+                </div>
 
-                <v-row>
-                    <v-col cols="12" md="4">
+             
+                    <v-col cols="12" md="8">
                         <v-text-field label="Senha" :rules="[rules.required, rules.min]" v-model="form.senha"
                             :append-inner-icon="form.visible ? 'mdi-eye-off' : 'mdi-eye'"
                             :type="form.visible ? 'text' : 'password'" @click:append-inner="form.visible = !form.visible" />
                     </v-col>
-                </v-row>
+               
 
-                <v-row>
-                    <v-col cols="12" md="4">
+               
+                    <v-col cols="12" md="8">
                         <v-text-field label="Confirmar senha" :rules="[rules.required,]" v-model="form.confirmarSenha"
                             :append-inner-icon="form.visible ? 'mdi-eye-off' : 'mdi-eye'"
                             :type="form.visible ? 'text' : 'password'" @click:append-inner="form.visible = !form.visible" />
                     </v-col>
-                </v-row>
+               
 
-                <v-row>
-                    <v-col cols="12" md="4">
-                        <v-btn type="submit" class="btn" rounded="lg" color="#585555">Cadastrar</v-btn>
+              
+                    <v-col cols="12" md="8">
+                        <v-btn type="submit" class="btn btn-cadastar" rounded="lg" color="#585555">Cadastrar</v-btn>
                     </v-col>
-                </v-row>
-            </v-container>
+               
+            
 
         </v-form>
-    </v-container>
+        </v-sheet>
+  </v-sheet>
 </template>
 
 <script>
@@ -114,10 +120,6 @@ export default {
                 }
             }
 
-
-            console.log(data);
-
-
             const res = await fetch(`http://localhost:5000/${endpoint}`, {
                 method: "POST",
                 headers: {
@@ -147,7 +149,24 @@ export default {
 </script>
 
 <style>
+.container-main{
+    height: 100%;
+}
+.container-image{
+    padding: 100px !important;
+    display: flex;
+    justify-content: center;
+}
+.container-row-cadastro{
+    display: flex;
+}
+.container-form{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
 .btn {
     width: 1000px;
+    height: 55px !important;
 }
 </style>
