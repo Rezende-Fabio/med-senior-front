@@ -174,14 +174,6 @@ const editedItem = ref({
     idosoId: ""
 });
 
-const defaultItem = ref({
-    name: '',
-    calories: 0,
-    fat: 0,
-    carbs: 0,
-    protein: 0,
-});
-
 const formTitle = computed(() => {
     return editedIndex.value === -1 ? 'Cadastrar Medicamento' : 'Editar Medicamento';
 });
@@ -229,20 +221,26 @@ const deleteItemConfirm = () => {
             titleAtlert.value = "Erro";
             textAlert.value = "Não foi possível excluir a medicação!";
             alert.value = true;
-            console.log(error);
+            console.error(error);
+            dismissAlert();
         });
     closeDelete();
 };
 
 const close = () => {
     dialog.value = false;
-    editedItem.value = { ...defaultItem.value };
     editedIndex.value = -1;
+    editedItem.value = {
+        id: "",
+        name: "",
+        descricao: "",
+        modoAdm: "",
+        idosoId: ""
+    }
 };
 
 const closeDelete = () => {
     dialogDelete.value = false;
-    editedItem.value = { ...defaultItem.value };
     editedIndex.value = -1;
 };
 
@@ -266,28 +264,30 @@ const save = () => {
                 titleAtlert.value = "Erro";
                 textAlert.value = "Não foi possível alterar a medicação!";
                 alert.value = true;
-                console.log(error);
+                console.error(error);
+                dismissAlert();
             });
     } else {
         $fetch(URL_SERVER + 'medicacao', {
             method: 'POST',
             body: JSON.stringify(editedItem.value)
         })
-        .then((response) => {
-            typeAlert.value = "success";
-            titleAtlert.value = "Sucesso";
-            textAlert.value = "Medicação incluida com sucesso!";
-            alert.value = true;
-            dismissAlert();
-            updateItemList();
-        })
-        .catch((error) => {
-            typeAlert.value = "error";
-            titleAtlert.value = "Erro";
-            textAlert.value = "Não foi possível incluir a medicação!";
-            alert.value = true;
-            console.log(error);
-        });
+            .then((response) => {
+                typeAlert.value = "success";
+                titleAtlert.value = "Sucesso";
+                textAlert.value = "Medicação incluida com sucesso!";
+                alert.value = true;
+                dismissAlert();
+                updateItemList();
+            })
+            .catch((error) => {
+                typeAlert.value = "error";
+                titleAtlert.value = "Erro";
+                textAlert.value = "Não foi possível incluir a medicação!";
+                alert.value = true;
+                console.error(error);
+                dismissAlert();
+            });
     }
     close();
 };
