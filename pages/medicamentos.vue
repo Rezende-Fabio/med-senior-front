@@ -137,7 +137,8 @@ import {
 import { ref } from 'vue';
 
 const URL_SERVER = "http://localhost:5000/";
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'));
+const idosoId = "";
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
 
 const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
 const dialog = ref(false);
@@ -171,7 +172,7 @@ const editedItem = ref({
     name: "",
     descricao: "",
     modoAdm: "",
-    idosoId: ""
+    idosoId: idosoId
 });
 
 const formTitle = computed(() => {
@@ -235,7 +236,7 @@ const close = () => {
         name: "",
         descricao: "",
         modoAdm: "",
-        idosoId: ""
+        idosoId: idosoId
     }
 };
 
@@ -293,7 +294,7 @@ const save = () => {
 };
 
 function updateItemList() {
-    const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'));
+    const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
     desserts.value = [];
     data.value.forEach(element => {
         var row = {

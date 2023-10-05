@@ -51,7 +51,7 @@
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-autocomplete label="Nome do Medicamento"
-                                                            :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"></v-autocomplete>
+                                                            :items="items"></v-autocomplete>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field v-model="editedItem.nome" type="number" min="1"
@@ -63,11 +63,12 @@
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field v-model="editedItem.nome" messages="Formato: hh:mm"
+                                                            :rules="[rules.time]"
                                                             label="Hora do primeiro consumo"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field messages="Formato: dd/mm/yyyy" v-model="editedItem.dataNasc"
-                                                            :rules="[rules.date]"
+                                                        <v-text-field messages="Formato: dd/mm/yyyy"
+                                                            v-model="editedItem.dataNasc" :rules="[rules.date]"
                                                             label="Data final"></v-text-field>
                                                     </v-row>
 
@@ -142,11 +143,24 @@ import {
     VDataTableVirtual,
 } from "vuetify/labs/VDataTable";
 import { ref } from 'vue';
+import { convertDateToDatetime } from "~/utils/convertDateToDateTime";
+import { convertDateTimeToDate } from "~/utils/convertDateTimeToDate";
 
-//const URL_SERVER = "http://localhost:5000/";
-//const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'));
+const URL_SERVER = "http://localhost:5000/";
+const idosoId = "9dc4efc7-9ccb-4fb9-b4f4-2889f0e348b7";
+const codigoIdoso = "F2F4F5";
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + codigoIdoso));
 
-const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
+// const names = () => {
+//     const _names = data.map(element => {
+//         return element.nome;
+//     });
+
+//     return _names;
+// } 
+
+const items = ref(['Dipirona']);
+
 const dialog = ref(false);
 const dialogDelete = ref(false);
 const titleAtlert = ref("");
@@ -165,10 +179,10 @@ const headers = [
         align: 'start',
         key: 'nome',
     },
-    { title: 'Dosagem', key: 'descricao' },
-    { title: 'Intervalo de horas', key: 'modoAdm' },
-    { title: 'Hora do primeiro consumo', key: 'modoAdm' },
-    { title: 'Data final', key: 'modoAdm' },
+    { title: 'Dosagem', key: 'dosagem' },
+    { title: 'Intervalo de horas', key: 'intervalo' },
+    { title: 'Hora do primeiro consumo', key: 'horaInicial' },
+    { title: 'Data final', key: 'dataFinal' },
     { title: 'Ações', key: 'actions', sortable: false },
 ];
 
@@ -177,15 +191,16 @@ const desserts = ref([]);
 const editedIndex = ref(-1);
 const editedItem = ref({
     id: "",
-    name: "",
+    nome: "",
     descricao: "",
     dataNasc: null,
     modoAdm: "",
-    idosoId: ""
+    idosoId: idosoId
 })
 
 const rules = {
     date: value => /^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/\d{4}$/.test(value) || 'Data inválida',
+    time: value => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value) || 'Formato de hora inválido'
 };
 
 const formTitle = computed(() => {
@@ -193,16 +208,18 @@ const formTitle = computed(() => {
 });
 
 const initialize = () => {
-    //desserts.value = [];
-    //data.value.forEach(element => {
-    //    var row = {
-    //        id: element.id,
-    //        nome: element.nome,
-    //        descricao: element.descricao,
-    //        modoAdm: element.modoAdm
-    //    }
-    //    desserts.value.push(row);
-    //});
+    desserts.value = [];
+    data.value.forEach(element => {
+       var row = {
+           nome: element.nome,
+           dosagem: element.dosagem,
+           intervalo: element.intervalo,
+           horaInicial: convertDateTimeToTime(element.horaInicial),
+           dataFinal: convertDateTimeToDate(element.dataFinal)
+       }
+       desserts.value.push(row);
+    });
+
 };
 
 const editItem = (item) => {
@@ -249,7 +266,7 @@ const close = () => {
         name: "",
         descricao: "",
         modoAdm: "",
-        idosoId: ""
+        idosoId: idosoId
     }
 };
 
@@ -261,26 +278,26 @@ const closeDelete = () => {
 const save = () => {
     console.log(editedIndex);
     if (editedIndex.value > -1) {
-        //    $fetch(URL_SERVER + `medicacao/${editedItem.value.id}`, {
-        //         method: 'PUT',
-        //         body: JSON.stringify(editedItem.value)
-        //     })
-        //         .then((response) => {
-        //             typeAlert.value = "success";
-        //             titleAtlert.value = "Sucesso";
-        //             textAlert.value = "Medicação alterada com sucesso!";
-        //             alert.value = true;
-        //             dismissAlert();
-        //             updateItemList();
-        //         })
-        //         .catch((error) => {
-        //             typeAlert.value = "error";
-        //             titleAtlert.value = "Erro";
-        //             textAlert.value = "Não foi possível alterar a medicação!";
-        //             alert.value = true;
-        //             console.error(error);
-        //             dismissAlert();
-        //         });
+           $fetch(URL_SERVER + `medicacao/uso/${editedItem.value.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(editedItem.value)
+            })
+                .then((response) => {
+                    typeAlert.value = "success";
+                    titleAtlert.value = "Sucesso";
+                    textAlert.value = "Medicação alterada com sucesso!";
+                    alert.value = true;
+                    dismissAlert();
+                    updateItemList();
+                })
+                .catch((error) => {
+                    typeAlert.value = "error";
+                    titleAtlert.value = "Erro";
+                    textAlert.value = "Não foi possível alterar a medicação!";
+                    alert.value = true;
+                    console.error(error);
+                    dismissAlert();
+                });
     } else {
         // $fetch(URL_SERVER + 'medicacao', {
         //     method: 'POST',
@@ -307,7 +324,7 @@ const save = () => {
 };
 
 function updateItemList() {
-    //const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'));
+    //const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
     // desserts.value = [];
     // data.value.forEach(element => {
     //     var row = {
