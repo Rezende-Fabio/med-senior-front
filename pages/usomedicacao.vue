@@ -50,8 +50,11 @@
                                             <v-container>
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-autocomplete label="Nome do Medicamento"
-                                                            :items="items.values.nome"></v-autocomplete>
+                                                        <v-autocomplete v-model="editedItem.medicacao"
+                                                        label="Nome do Medicamento"
+                                                        :items="items"
+                                                        item-title="nome"
+                                                        item-value="id"></v-autocomplete>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field v-model="editedItem.nome" type="number" min="1"
@@ -147,7 +150,7 @@ import { convertDateToDatetime } from "~/utils/convertDateToDateTime";
 import { convertDateTimeToDate } from "~/utils/convertDateTimeToDate";
 
 const URL_SERVER = "http://localhost:5000/";
-const idosoId = "ec8fd05b-9c7d-424a-aa15-3b5ad06ff29c";
+const idosoId = "1b0cd66e-03ef-4e37-bf58-eeb7d1644ede";
 const codigoIdoso = "Z7Q4M3";
 const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + codigoIdoso));
 
@@ -172,10 +175,7 @@ const nomesMedicamento = async () => {
 }
 
 const names = await nomesMedicamento();
-
 const items = ref(names);
-
-console.log(items.value);
 
 const dialog = ref(false);
 const dialogDelete = ref(false);
@@ -211,6 +211,7 @@ const editedItem = ref({
     descricao: "",
     dataNasc: null,
     modoAdm: "",
+    medicacao: "",
     idosoId: idosoId
 })
 
@@ -292,29 +293,29 @@ const closeDelete = () => {
 };
 
 const save = () => {
-    console.log(editedIndex);
-    if (editedIndex.value > -1) {
-        $fetch(URL_SERVER + `medicacao/uso/${editedItem.value.id}`, {
-            method: 'PUT',
-            body: JSON.stringify(editedItem.value)
-        })
-            .then((response) => {
-                typeAlert.value = "success";
-                titleAtlert.value = "Sucesso";
-                textAlert.value = "Medicação alterada com sucesso!";
-                alert.value = true;
-                dismissAlert();
-                updateItemList();
-            })
-            .catch((error) => {
-                typeAlert.value = "error";
-                titleAtlert.value = "Erro";
-                textAlert.value = "Não foi possível alterar a medicação!";
-                alert.value = true;
-                console.error(error);
-                dismissAlert();
-            });
-    } else {
+    console.log(editedItem.value);
+    // if (editedIndex.value > -1) {
+    //     $fetch(URL_SERVER + `medicacao/uso/${editedItem.value.id}`, {
+    //         method: 'PUT',
+    //         body: JSON.stringify(editedItem.value)
+    //     })
+    //         .then((response) => {
+    //             typeAlert.value = "success";
+    //             titleAtlert.value = "Sucesso";
+    //             textAlert.value = "Medicação alterada com sucesso!";
+    //             alert.value = true;
+    //             dismissAlert();
+    //             updateItemList();
+    //         })
+    //         .catch((error) => {
+    //             typeAlert.value = "error";
+    //             titleAtlert.value = "Erro";
+    //             textAlert.value = "Não foi possível alterar a medicação!";
+    //             alert.value = true;
+    //             console.error(error);
+    //             dismissAlert();
+    //         });
+    // } else {
         // $fetch(URL_SERVER + 'medicacao', {
         //     method: 'POST',
         //     body: JSON.stringify(editedItem.value)
@@ -335,7 +336,7 @@ const save = () => {
         //         console.error(error);
         //         dismissAlert();
         //     });
-    }
+    // }
     close();
 };
 
