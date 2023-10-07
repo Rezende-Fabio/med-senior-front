@@ -50,28 +50,28 @@
                                             <v-container>
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-autocomplete v-model="editedItem.medicacao"
+                                                        <v-autocomplete v-model="usoMedicacao.medId"
                                                         label="Nome do Medicamento"
                                                         :items="items"
                                                         item-title="nome"
                                                         item-value="id"></v-autocomplete>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="editedItem.nome" type="number" min="1"
+                                                        <v-text-field v-model="usoMedicacao.dosagem" type="number" min="1"
                                                             label="Dosagem"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="editedItem.nome" type="number" min="1"
+                                                        <v-text-field v-model="usoMedicacao.intervalo" type="number" min="1"
                                                             label="Intervalo de horas"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="editedItem.nome" messages="Formato: hh:mm"
+                                                        <v-text-field v-model="usoMedicacao.horaInicial" messages="Formato: hh:mm"
                                                             :rules="[rules.time]"
                                                             label="Hora do primeiro consumo"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field messages="Formato: dd/mm/yyyy"
-                                                            v-model="editedItem.dataNasc" :rules="[rules.date]"
+                                                            v-model="usoMedicacao.dataFinal" :rules="[rules.date]"
                                                             label="Data final"></v-text-field>
                                                     </v-row>
 
@@ -102,7 +102,7 @@
                                         <v-sheet>
                                             <v-card-text class="text-h5 mb-10 break-title">
                                                 <div>
-                                                    <h5>Tem certeza que deseja excluir o(a) medicação {{ editedItem.nome }}?
+                                                    <h5>Tem certeza que deseja excluir o esse horario?
                                                     </h5>
                                                 </div>
                                             </v-card-text>
@@ -148,11 +148,11 @@ import {
 import { ref } from 'vue';
 import { convertDateToDatetime } from "~/utils/convertDateToDateTime";
 import { convertDateTimeToDate } from "~/utils/convertDateTimeToDate";
+import { convertStringToTime } from "~/utils/convertStringToTime";
 
 const URL_SERVER = "http://localhost:5000/";
-const idosoId = "1b0cd66e-03ef-4e37-bf58-eeb7d1644ede";
-const codigoIdoso = "Z7Q4M3";
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + codigoIdoso));
+const idosoId = "09c278d0-5791-43d1-aac0-cd3ba76321f3"; 
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + idosoId));
 
 const nomesMedicamento = async () => {
     const names = await $fetch(URL_SERVER + 'medicacao/todos/' + idosoId)
@@ -191,6 +191,11 @@ const headers = [
         align: ' d-none'
     },
     {
+        title: "ID Medicação",
+        key: "medId",
+        align: ' d-none'
+    },
+    {
         title: 'Nome Medicamento',
         align: 'start',
         key: 'nome',
@@ -205,14 +210,14 @@ const headers = [
 const desserts = ref([]);
 
 const editedIndex = ref(-1);
-const editedItem = ref({
+const usoMedicacao = ref({
     id: "",
-    nome: "",
-    descricao: "",
-    dataNasc: null,
-    modoAdm: "",
-    medicacao: "",
-    idosoId: idosoId
+    dosagem: null,
+    intervalo: null,
+    horaInicial: "",
+    dataFinal: null,
+    idosoId: idosoId,
+    medId: ""
 })
 
 const rules = {
@@ -228,7 +233,9 @@ const initialize = () => {
     desserts.value = [];
     data.value.forEach(element => {
         var row = {
-            nome: element.nome,
+            id: element.id,
+            medId: element.medicacao.id,
+            nome: element.medicacao.nome,
             dosagem: element.dosagem,
             intervalo: element.intervalo,
             horaInicial: convertDateTimeToTime(element.horaInicial),
@@ -241,49 +248,50 @@ const initialize = () => {
 
 const editItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    editedItem.value = { ...item };
+    usoMedicacao.value = { ...item };
     dialog.value = true;
 };
 
 const deleteItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    editedItem.value = { ...item };
+    usoMedicacao.value = { ...item };
     dialogDelete.value = true;
 };
 
 const deleteItemConfirm = () => {
-    //    $fetch(URL_SERVER + `medicacao/${editedItem.value.id}`, {
-    //         method: 'DELETE',
-    //         body: JSON.stringify(editedItem.value)
-    //     })
-    //         .then((response) => {
-    //             typeAlert.value = "success";
-    //             titleAtlert.value = "Sucesso";
-    //             textAlert.value = "Medicação excluida com sucesso!";
-    //             alert.value = true;
-    //             dismissAlert();
-    //             updateItemList();
-    //         })
-    //         .catch((error) => {
-    //             typeAlert.value = "error";
-    //             titleAtlert.value = "Erro";
-    //             textAlert.value = "Não foi possível excluir a medicação!";
-    //             alert.value = true;
-    //             console.error(error);
-    //             dismissAlert();
-    //         });
+    $fetch(URL_SERVER + `medicacao/uso/${usoMedicacao.value.id}`, {
+         method: 'DELETE',
+         body: JSON.stringify(usoMedicacao.value)
+     })
+        .then((response) => {
+            typeAlert.value = "success";
+            titleAtlert.value = "Sucesso";
+            textAlert.value = "Agendamento excluido com sucesso!";
+            alert.value = true;
+            dismissAlert();
+            updateItemList();
+        })
+        .catch((error) => {
+            typeAlert.value = "error";
+            titleAtlert.value = "Erro";
+            textAlert.value = "Não foi possível excluir o agendamento!";
+            alert.value = true;
+            console.error(error);
+            dismissAlert();
+        });
     closeDelete();
 };
 
 const close = () => {
     dialog.value = false;
     editedIndex.value = -1;
-    editedItem.value = {
-        id: "",
-        name: "",
-        descricao: "",
-        modoAdm: "",
-        idosoId: idosoId
+    usoMedicacao.value = {
+        dosagem: null,
+        intervalo: null,
+        horaInicial: "",
+        dataFinal: null,
+        idosoId: idosoId,
+        medId: ""
     }
 };
 
@@ -292,66 +300,63 @@ const closeDelete = () => {
     editedIndex.value = -1;
 };
 
+const formataDados = () => {
+    usoMedicacao.value.intervalo = parseFloat(usoMedicacao.value.intervalo);
+    usoMedicacao.value.dosagem = parseFloat(usoMedicacao.value.dosagem);
+    usoMedicacao.value.horaInicial = convertStringToTime(usoMedicacao.value.horaInicial);
+    usoMedicacao.value.dataFinal = convertDateToDatetime(usoMedicacao.value.dataFinal);
+};
+
 const save = () => {
-    console.log(editedItem.value);
-    // if (editedIndex.value > -1) {
-    //     $fetch(URL_SERVER + `medicacao/uso/${editedItem.value.id}`, {
-    //         method: 'PUT',
-    //         body: JSON.stringify(editedItem.value)
-    //     })
-    //         .then((response) => {
-    //             typeAlert.value = "success";
-    //             titleAtlert.value = "Sucesso";
-    //             textAlert.value = "Medicação alterada com sucesso!";
-    //             alert.value = true;
-    //             dismissAlert();
-    //             updateItemList();
-    //         })
-    //         .catch((error) => {
-    //             typeAlert.value = "error";
-    //             titleAtlert.value = "Erro";
-    //             textAlert.value = "Não foi possível alterar a medicação!";
-    //             alert.value = true;
-    //             console.error(error);
-    //             dismissAlert();
-    //         });
-    // } else {
-        // $fetch(URL_SERVER + 'medicacao', {
-        //     method: 'POST',
-        //     body: JSON.stringify(editedItem.value)
-        // })
-        //     .then((response) => {
-        //         typeAlert.value = "success";
-        //         titleAtlert.value = "Sucesso";
-        //         textAlert.value = "Medicação incluida com sucesso!";
-        //         alert.value = true;
-        //         dismissAlert();
-        //         updateItemList();
-        //     })
-        //     .catch((error) => {
-        //         typeAlert.value = "error";
-        //         titleAtlert.value = "Erro";
-        //         textAlert.value = "Não foi possível incluir a medicação!";
-        //         alert.value = true;
-        //         console.error(error);
-        //         dismissAlert();
-        //     });
-    // }
+    formataDados();
+    if (editedIndex.value > -1) {
+        $fetch(URL_SERVER + `medicacao/uso/${usoMedicacao.value.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(usoMedicacao.value)
+        })
+        .then((response) => {
+            typeAlert.value = "success";
+            titleAtlert.value = "Sucesso";
+            textAlert.value = "Agendamento alterado com sucesso!";
+            alert.value = true;
+            dismissAlert();
+            updateItemList();
+        })
+        .catch((error) => {
+            typeAlert.value = "error";
+            titleAtlert.value = "Erro";
+            textAlert.value = "Não foi possível alterar o agendamento!";
+            alert.value = true;
+            console.error(error);
+            dismissAlert();
+        });
+    } else {
+        $fetch(URL_SERVER + 'medicacao/uso', {
+            method: 'POST',
+            body: JSON.stringify(usoMedicacao.value)
+        })
+        .then((response) => {
+            typeAlert.value = "success";
+            titleAtlert.value = "Sucesso";
+            textAlert.value = "Agendamento incluido com sucesso!";
+            alert.value = true;
+            dismissAlert();
+            updateItemList();
+        })
+        .catch((error) => {
+            typeAlert.value = "error";
+            titleAtlert.value = "Erro";
+            textAlert.value = "Não foi possível incluir o agendamento!";
+            alert.value = true;
+            console.error(error);
+            dismissAlert();
+        });
+    }
     close();
 };
 
 function updateItemList() {
-    //const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
-    // desserts.value = [];
-    // data.value.forEach(element => {
-    //     var row = {
-    //         id: element.id,
-    //         nome: element.nome,
-    //         descricao: element.descricao,
-    //         modoAdm: element.modoAdm
-    //     }
-    //     desserts.value.push(row);
-    // });
+    window.location.reload();
 }
 
 function dismissAlert() {

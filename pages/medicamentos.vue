@@ -129,6 +129,7 @@
 </template>
 
 <script setup >
+const URL_SERVER = "http://localhost:5000/";
 import {
     VDataTable,
     VDataTableServer,
@@ -136,8 +137,7 @@ import {
 } from "vuetify/labs/VDataTable";
 import { ref } from 'vue';
 
-const URL_SERVER = "http://localhost:5000/";
-const idosoId = "";
+const idosoId = "09c278d0-5791-43d1-aac0-cd3ba76321f3";
 const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
 
 const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
@@ -294,17 +294,7 @@ const save = () => {
 };
 
 function updateItemList() {
-    const { data } = useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
-    desserts.value = [];
-    data.value.forEach(element => {
-        var row = {
-            id: element.id,
-            nome: element.nome,
-            descricao: element.descricao,
-            modoAdm: element.modoAdm
-        }
-        desserts.value.push(row);
-    });
+    window.location.reload();
 }
 
 function dismissAlert() {
