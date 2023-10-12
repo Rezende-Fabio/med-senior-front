@@ -137,7 +137,7 @@ import {
 } from "vuetify/labs/VDataTable";
 import { ref } from 'vue';
 
-const idosoId = "09c278d0-5791-43d1-aac0-cd3ba76321f3";
+const idosoId = "164e942f-9dd8-49b4-9808-ec26e2db87a4";
 const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
 
 const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
