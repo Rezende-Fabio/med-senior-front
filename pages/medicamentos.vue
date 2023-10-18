@@ -1,22 +1,7 @@
 <template>
-    <v-navigation-drawer>
-        <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
-        <v-divider></v-divider>
-        <v-list style="height: 80%;" class="d-flex flex-column justify-space-between" nav>
-            <v-list-item prepend-icon="mdi-pill" title="MEDICAMENTOS" value=""></v-list-item>
-            <v-list-item prepend-icon="mdi-calendar" title="CONSULTAS" value=""></v-list-item>
-            <v-list-item prepend-icon="mdi-file" title="PRONTUÁRIO" value=""></v-list-item>
-        </v-list>
-    </v-navigation-drawer>
+    <Sidebar/>
     <v-main>
-        <v-app-bar :elevation="3">
-            <v-btn prepend-icon="mdi-sick">
-                Está com algum desconforto?
-            </v-btn>
-            <v-btn prepend-icon="mdi-phone">
-                Emergência
-            </v-btn>
-        </v-app-bar>
+        <Appbar/>
         <div class="div-main">
             <div class="d-flex flex-column mb-6">
                 <v-sheet class="ma-2 pa-2">
@@ -53,15 +38,15 @@
                                             <v-container>
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="editedItem.nome"
+                                                        <v-text-field v-model="medicacao.nome"
                                                             label="Nome do Medicamento"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-textarea v-model="editedItem.descricao"
+                                                        <v-textarea v-model="medicacao.descricao"
                                                             label="Descrição"></v-textarea>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-select v-model="editedItem.modoAdm" :items="items"
+                                                        <v-select v-model="medicacao.modoAdm" :items="items"
                                                             label="Modo de Administração (ml/qtd)"></v-select>
                                                     </v-row>
                                                 </v-col>
@@ -91,7 +76,7 @@
                                         <v-sheet>
                                             <v-card-text class="text-h5 mb-10 break-title">
                                                 <div>
-                                                    <h5>Tem certeza que deseja excluir o(a) medicação {{ editedItem.nome }}?
+                                                    <h5>Tem certeza que deseja excluir o(a) medicação {{ medicacao.nome }}?
                                                     </h5>
                                                 </div>
                                             </v-card-text>
@@ -136,6 +121,8 @@ import {
     VDataTableVirtual,
 } from "vuetify/labs/VDataTable";
 import { ref } from 'vue';
+import Sidebar from '../components/sidebar.vue';
+import Appbar from '../components/appbar.vue';
 
 const idosoId = "164e942f-9dd8-49b4-9808-ec26e2db87a4";
 const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
@@ -167,7 +154,7 @@ const headers = [
 const desserts = ref([]);
 
 const editedIndex = ref(-1);
-const editedItem = ref({
+const medicacao = ref({
     id: "",
     name: "",
     descricao: "",
@@ -194,20 +181,20 @@ const initialize = () => {
 
 const editItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    editedItem.value = { ...item };
+    medicacao.value = { ...item };
     dialog.value = true;
 };
 
 const deleteItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    editedItem.value = { ...item };
+    medicacao.value = { ...item };
     dialogDelete.value = true;
 };
 
 const deleteItemConfirm = () => {
-    $fetch(URL_SERVER + `medicacao/${editedItem.value.id}`, {
+    $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
         method: 'DELETE',
-        body: JSON.stringify(editedItem.value)
+        body: JSON.stringify(medicacao.value)
     })
         .then((response) => {
             typeAlert.value = "success";
@@ -231,7 +218,7 @@ const deleteItemConfirm = () => {
 const close = () => {
     dialog.value = false;
     editedIndex.value = -1;
-    editedItem.value = {
+    medicacao.value = {
         id: "",
         name: "",
         descricao: "",
@@ -246,11 +233,10 @@ const closeDelete = () => {
 };
 
 const save = () => {
-    console.log(editedIndex);
     if (editedIndex.value > -1) {
-        $fetch(URL_SERVER + `medicacao/${editedItem.value.id}`, {
+        $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
             method: 'PUT',
-            body: JSON.stringify(editedItem.value)
+            body: JSON.stringify(medicacao.value)
         })
             .then((response) => {
                 typeAlert.value = "success";
@@ -271,7 +257,7 @@ const save = () => {
     } else {
         $fetch(URL_SERVER + 'medicacao', {
             method: 'POST',
-            body: JSON.stringify(editedItem.value)
+            body: JSON.stringify(medicacao.value)
         })
             .then((response) => {
                 typeAlert.value = "success";

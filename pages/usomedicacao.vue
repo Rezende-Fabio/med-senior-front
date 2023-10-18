@@ -1,22 +1,7 @@
 <template>
-    <v-navigation-drawer>
-        <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
-        <v-divider></v-divider>
-        <v-list style="height: 80%;" class="d-flex flex-column justify-space-between" nav>
-            <v-list-item prepend-icon="mdi-pill" title="MEDICAMENTOS" value=""></v-list-item>
-            <v-list-item prepend-icon="mdi-calendar" title="CONSULTAS" value=""></v-list-item>
-            <v-list-item prepend-icon="mdi-file" title="PRONTUÁRIO" value=""></v-list-item>
-        </v-list>
-    </v-navigation-drawer>
+    <Sidebar/>
     <v-main>
-        <v-app-bar :elevation="3">
-            <v-btn prepend-icon="mdi-sick">
-                Está com algum desconforto?
-            </v-btn>
-            <v-btn prepend-icon="mdi-phone">
-                Emergência
-            </v-btn>
-        </v-app-bar>
+        <Appbar/>
         <div class="div-main">
             <div class="d-flex flex-column mb-6">
                 <v-sheet class="ma-2 pa-2">
@@ -149,6 +134,8 @@ import { ref } from 'vue';
 import { convertDateToDatetime } from "~/utils/convertDateToDateTime";
 import { convertDateTimeToDate } from "~/utils/convertDateTimeToDate";
 import { convertStringToTime } from "~/utils/convertStringToTime";
+import Sidebar from '../components/sidebar.vue';
+import Appbar from '../components/appbar.vue';
 
 const URL_SERVER = "http://localhost:5000/";
 const idosoId = "164e942f-9dd8-49b4-9808-ec26e2db87a4"; 
