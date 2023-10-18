@@ -27,7 +27,8 @@ $ npm install
 
 ### Rodando a aplicação
 
-Obs.: Não esquecer de subir a [API](https://github.com/gcostacoelho/med-senior-api) antes da inicialização da aplicação.<br>
+> Obs.: Não esquecer de subir a [API](https://github.com/gcostacoelho/med-senior-api) antes da inicialização da aplicação.<br>
+
 Após realizar todas as etapas acima, já podemos iniciar a aplicação com o seguinte comando:
 
 ```bash
