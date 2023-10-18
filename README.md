@@ -47,7 +47,7 @@ Após a aplicação terminar de subir, já vai ser possível realizar o acesso a
 
 ## Colaboradores
 
-- [Fabio Rezende](https://github.com/Rezende-Fabio)
+- [Gustavo Coelho](https://github.com/gcostacoelho)
 - [Mateus Moraes](https://github.com/Mateus11Toledo)
 - [Hellen Turri](https://github.com/hellenTurri)
 - [Karin Kagi](https://github.com/karinkagi)
