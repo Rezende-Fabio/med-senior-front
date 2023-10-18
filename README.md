@@ -1,75 +1,52 @@
-# Nuxt 3 Minimal Starter
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Med Senior - API
 
-## Setup
+* [Sobre](#sobre)
+* [Configurando a aplicação](#configurando-a-aplicação)
+    * [Instalando as dependências](#instalando-as-dependências)
+    * [Rodando a aplicação](#rodando-a-aplicação)
+* [Outros repositórios](#outros-repositórios)
+* [Colaboradores](#colaboradores)
 
-Make sure to install the dependencies:
+## Sobre
 
-```bash
-# npm
-npm install
+> Projeto desenvolvido para as disciplinas de DSW e PDM
 
-# pnpm
-pnpm install
+Idosos muitas vezes enfrentam desafios em sua vida diária e podem precisar de ajuda em situações de emergência.
 
-# yarn
-yarn install
+Solução Proposta: Um aplicativo web que oferece recursos de assistência, como alertas de medicamentos, rastreamento de saúde e botões de emergência para idosos. Ele também pode permitir que familiares e cuidadores monitorem o bem-estar dos idosos remotamente.
 
-# bun
-bun install
-```
+## Configurando a aplicação
+### Instalando as dependências
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Rode o seguinte comando para instalar as dependências do projeto:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+$ npm install
 ```
 
-## Production
+### Rodando a aplicação
 
-Build the application for production:
+Obs.: Não esquecer de subir a [API](https://github.com/gcostacoelho/med-senior-api) antes da inicialização da aplicação.<br>
+Após realizar todas as etapas acima, já podemos iniciar a aplicação com o seguinte comando:
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+$ npm run dev
 ```
 
-Locally preview production build:
+Após a aplicação terminar de subir, já vai ser possível realizar o acesso através de algum navegador usando a URL: http://localhost:3000.
 
-```bash
-# npm
-npm run preview
+## Outros repositórios
 
-# pnpm
-pnpm run preview
+- Módulo de autenticação: [Med Senior - Auth](https://github.com/gcostacoelho/med-senior-auth)
 
-# yarn
-yarn preview
+- Back End : [Med Senior - API](https://github.com/gcostacoelho/med-senior-api)
 
-# bun
-bun run preview
-```
+- Mobile (desenvolvido em Flutter): [Med Senior - Mobile](https://github.com/Rezende-Fabio/med-senior-mobile)
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Colaboradores
+
+- [Fabio Rezende](https://github.com/Rezende-Fabio)
+- [Mateus Moraes](https://github.com/Mateus11Toledo)
+- [Hellen Turri](https://github.com/hellenTurri)
+- [Karin Kagi](https://github.com/karinkagi)
