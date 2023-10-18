@@ -1,5 +1,5 @@
 
-# Med Senior - API
+# Med Senior - Front End
 
 * [Sobre](#sobre)
 * [Configurando a aplicação](#configurando-a-aplicação)
@@ -34,7 +34,7 @@ Após realizar todas as etapas acima, já podemos iniciar a aplicação com o se
 $ npm run dev
 ```
 
-Após a aplicação terminar de subir, já vai ser possível realizar o acesso através de algum navegador usando a URL: http://localhost:3000.
+Após a aplicação terminar de subir, já vai ser possível realizar o acesso através de qualquer navegador usando a URL: http://localhost:3000.
 
 ## Outros repositórios
 
