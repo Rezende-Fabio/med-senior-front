@@ -18,7 +18,7 @@
                     <span class="text-item">MEDICAMENTOS</span>
                 </div> 
             </NuxtLink>
-            <NuxtLink to="">
+            <NuxtLink to="/usoMedicacao">
                 <div class="link-item">
                     <div class="icon-item">
                         <v-icon icon="mdi-calendar" size="x-large"></v-icon>
