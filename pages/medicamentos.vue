@@ -124,8 +124,12 @@ import { ref } from 'vue';
 import Sidebar from '../components/sidebar.vue';
 import Appbar from '../components/appbar.vue';
 
-const idosoId = "164e942f-9dd8-49b4-9808-ec26e2db87a4";
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+idosoId));
+const cookie = useCookie('idUsuario');
+const idosoId = cookie.value;
+
+console.log(idosoId);
+
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
 
 const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
 const dialog = ref(false);

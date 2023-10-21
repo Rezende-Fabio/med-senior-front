@@ -20,7 +20,7 @@
                 </v-form>
             </v-card>
         </v-layout>
-        <NuxtLink to="/home">Home</NuxtLink>
+        <NuxtLink to="/cadastro">Home</NuxtLink>
     </v-container>
 </template>
 

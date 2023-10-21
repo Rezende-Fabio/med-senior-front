@@ -138,7 +138,10 @@ import Sidebar from '../components/sidebar.vue';
 import Appbar from '../components/appbar.vue';
 
 const URL_SERVER = "http://localhost:5000/";
-const idosoId = "164e942f-9dd8-49b4-9808-ec26e2db87a4"; 
+
+const cookie = useCookie('idUsuario');
+const idosoId = cookie.value;
+
 const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + idosoId));
 
 const nomesMedicamento = async () => {
