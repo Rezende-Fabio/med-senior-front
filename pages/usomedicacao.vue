@@ -345,8 +345,22 @@ const save = () => {
     close();
 };
 
-function updateItemList() {
-    window.location.reload();
+async function updateItemList() {
+    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + idosoId));
+
+    desserts.value = [];
+    data.value.forEach(element => {
+        var row = {
+            id: element.id,
+            medId: element.medicacao.id,
+            nome: element.medicacao.nome,
+            dosagem: element.dosagem,
+            intervalo: element.intervalo,
+            horaInicial: convertDateTimeToTime(element.horaInicial),
+            dataFinal: convertDateTimeToDate(element.dataFinal)
+        }
+        desserts.value.push(row);
+    });
 }
 
 function dismissAlert() {

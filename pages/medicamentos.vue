@@ -113,7 +113,7 @@
     </v-main>
 </template>
 
-<script setup >
+<script setup>
 const URL_SERVER = "http://localhost:5000/";
 import {
     VDataTable,
@@ -283,8 +283,19 @@ const save = () => {
     close();
 };
 
-function updateItemList() {
-    window.location.reload();
+async function updateItemList() {
+    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
+
+    desserts.value = [];
+    data.value.forEach(element => {
+        var row = {
+            id: element.id,
+            nome: element.nome,
+            descricao: element.descricao,
+            modoAdm: element.modoAdm
+        }
+        desserts.value.push(row);
+    });
 }
 
 function dismissAlert() {
