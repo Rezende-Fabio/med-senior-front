@@ -131,7 +131,7 @@ import {
     VDataTableVirtual,
 } from "vuetify/labs/VDataTable";
 import { ref } from 'vue';
-import { convertDateToDatetime } from "~/utils/convertDateToDateTime";
+import { convertDateToDate } from "~/utils/convertDateToDate";
 import { convertDateTimeToDate } from "~/utils/convertDateTimeToDate";
 import { convertStringToTime } from "~/utils/convertStringToTime";
 import Sidebar from '../components/sidebar.vue';
@@ -294,7 +294,7 @@ const formataDados = () => {
     usoMedicacao.value.intervalo = parseFloat(usoMedicacao.value.intervalo);
     usoMedicacao.value.dosagem = parseFloat(usoMedicacao.value.dosagem);
     usoMedicacao.value.horaInicial = convertStringToTime(usoMedicacao.value.horaInicial);
-    usoMedicacao.value.dataFinal = convertDateToDatetime(usoMedicacao.value.dataFinal);
+    usoMedicacao.value.dataFinal = convertDateToDate(usoMedicacao.value.dataFinal);
 };
 
 const save = () => {

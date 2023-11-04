@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { convertDateToDatetime } from "../utils/convertDateToDateTime";
+import { convertDateToDate } from "../utils/convertDateToDate";
 
 export default {
     data: function () {
@@ -112,7 +112,7 @@ export default {
                 data = {
                     nome: this.form.nome,
                     telefone: this.form.telefone,
-                    dataNasc: convertDateToDatetime(this.form.dataNasc),
+                    dataNasc: convertDateToDate(this.form.dataNasc),
                     email: this.form.email,
                     senha: this.form.senha
                 }
@@ -120,7 +120,7 @@ export default {
                 data = {
                     nome: this.form.nome,
                     telefone: this.form.telefone,
-                    dataNasc: convertDateToDatetime(this.form.dataNasc),
+                    dataNasc: convertDateToDate(this.form.dataNasc),
                     codigoIdoso: this.form.codigo,
                     email: this.form.email,
                     senha: this.form.senha
