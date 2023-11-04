@@ -5,104 +5,64 @@
         </v-sheet>
 
         <v-sheet class="flex-1-0 ma-2 pa-2 container-form">
-            <v-form @submit.prevent="handlePostNewUser" class="form-cadastro">
-                
+            <v-form @submit.prevent="handleLogin" class="form-cadastro">
+
                 <h1 style="margin-bottom: 15px;">
                     Login
                 </h1>
-                    <v-col cols="12" md="8">
-                        <v-text-field label="E-mail" :rules="[rules.required, rules.email]" v-model="form.email" />
-                    </v-col>
+                <v-col cols="12" md="8">
+                    <v-text-field label="E-mail" :rules="[rules.required, rules.email]" v-model="form.email" />
+                </v-col>
 
-                    <v-col cols="12" md="8">
-                        <v-text-field label="Senha" :rules="[rules.required, rules.min]" v-model="form.senha"
-                            :append-inner-icon="form.visible ? 'mdi-eye-off' : 'mdi-eye'"
-                            :type="form.visible ? 'text' : 'password'" @click:append-inner="form.visible = !form.visible" />
-                    </v-col>
+                <v-col cols="12" md="8">
+                    <v-text-field label="Senha" :rules="[rules.required, rules.min]" v-model="form.senha"
+                        :append-inner-icon="form.visible ? 'mdi-eye-off' : 'mdi-eye'"
+                        :type="form.visible ? 'text' : 'password'" @click:append-inner="form.visible = !form.visible" />
+                </v-col>
 
-                    <v-col cols="12" md="8">
-                        <v-btn type="submit" class="btn btn-cadastar" rounded="lg" color="#585555">Entrar</v-btn>
-                    </v-col>
-               
-            
-
-        </v-form>
+                <v-col cols="12" md="8">
+                    <v-btn type="submit" class="btn btn-cadastar" rounded="lg" color="#585555">Entrar</v-btn>
+                </v-col>
+            </v-form>
         </v-sheet>
-  </v-sheet>
+    </v-sheet>
 </template>
 
 <script>
-import { convertDateToDatetime } from "../utils/convertDateToDateTime";
-
 export default {
     data: function () {
         return {
             form: {
-                nome: null,
                 email: null,
-                telefone: null,
-                dataNasc: null,
-                tipo: null,
-                codigo: null,
                 senha: null,
-                confirmarSenha: null,
                 visible: false,
             },
             rules: {
                 required: value => !!value || 'Campo obrigatório',
                 min: value => value.length >= 8 || 'Minimo de 8 caracteres',
-                date: value => /^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/\d{4}$/.test(value) || 'Data inválida',
                 email: value => /.+@.+\..+/.test(value) || 'E-mail deve ser valido',
-                telefone: value => /\d{7}-\d{4}$/.test(value) || 'Telefone deve ser válido'
             }
         }
     },
 
     methods: {
-        handlePostNewUser: async function () {
-            let endpoint = "cuidador";
-            let data;
-
-            if (this.form.tipo == 'Idoso') {
-                endpoint = 'idoso';
-
-                data = {
-                    nome: this.form.nome,
-                    telefone: this.form.telefone,
-                    dataNasc: convertDateToDatetime(this.form.dataNasc),
-                    email: this.form.email,
-                    senha: this.form.senha
-                }
-            } else {
-                data = {
-                    nome: this.form.nome,
-                    telefone: this.form.telefone,
-                    dataNasc: convertDateToDatetime(this.form.dataNasc),
-                    codigoIdoso: this.form.codigo,
-                    email: this.form.email,
-                    senha: this.form.senha
-                }
-            }
-
-            const res = await fetch(`http://localhost:5000/${endpoint}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data)
+        handleLogin: async function () {
+            const res = await fetch(`http://localhost:5001/authentication/login/${this.form.email}/${this.form.senha}`, {
+                method: "GET"
             });
+            
+            const resp = await res.json();
 
-            if (res.status == 201) {
-                alert("Cadastro realizado com sucesso");
+            if (res.status == 200) {
+                const userId = useCookie('idUsuario');
+                const token = useCookie('access_token')
+
+                userId.value = resp.data.idUsuario;
+                token.value = resp.data.access_token;
+
                 this.$router.push("/home");
-            }
-
-            if (res.status == 400) {
-                alert("Alguma informação pode estar inválida, por favor tente novamente");
-            }
-
-            if (res.status == 500) {
-                alert("Houve um erro ao processar sua solicitação, tente novamente mais tarde");
+            } else {
+                alert("Email ou senha incorretos");
             }
 
         }
@@ -113,22 +73,26 @@ export default {
 </script>
 
 <style>
-.container-main{
+.container-main {
     height: 100%;
 }
-.container-image{
+
+.container-image {
     padding: 100px !important;
     display: flex;
     justify-content: center;
 }
-.container-row-cadastro{
+
+.container-row-cadastro {
     display: flex;
 }
-.container-form{
+
+.container-form {
     display: flex;
     align-items: center;
     justify-content: flex-end;
 }
+
 .btn {
     width: 1000px;
     height: 55px !important;

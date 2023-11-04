@@ -136,7 +136,7 @@ export default {
 
             if (res.status == 201) {
                 alert("Cadastro realizado com sucesso");
-                this.$router.push("/home");
+                this.$router.push("/login");
             }
 
             if (res.status == 400) {
