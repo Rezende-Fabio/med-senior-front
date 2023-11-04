@@ -81,7 +81,7 @@ async function save() {
             descricao: sintoma.value,
             ocorrencia: convertDateToDatetime(new Date().toLocaleString())
         }
-        console.log(data);
+        
         const res = await fetch(URL_SERVER + `sintoma`, {
             method: "POST",
             headers: {

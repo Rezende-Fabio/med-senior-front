@@ -12,8 +12,8 @@ export function convertDateToDatetime(dateString: string) {
         const seconds = timeSplited[2];
 
         const date = new Date(`${year}-${month}-${day} ${hours}:${minutes}:${seconds}`);
-
-        return date;
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return date.toISOString();
     } catch (error) {
         return new Error();
     }
