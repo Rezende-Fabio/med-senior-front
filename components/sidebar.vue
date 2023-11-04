@@ -1,13 +1,15 @@
 <template>
     <v-navigation-drawer class="bg-grey">
         <v-list-item>
-            <div class="header-sidebar">
-                <div class="icon-header">
-                    <v-icon icon="mdi-account" size="x-large"></v-icon>
+            <NuxtLink to="/home" class="link-home">
+                <div class="header-sidebar">
+                    <div class="icon-header">
+                        <v-icon icon="mdi-account" size="x-large"></v-icon>
+                    </div>
+                    <h4 class="cl-black">Sarah Ramos</h4>
+                    <span class="cl-black">A6789</span>
                 </div>
-                <h4 class="cl-black">Sarah Ramos</h4>
-                <span class="cl-black">A6789</span>
-            </div>
+            </NuxtLink>
         </v-list-item>
         <v-list style="height: 70%;" class="d-flex flex-column justify-space-between" nav>
             <NuxtLink to="/medicamentos">
@@ -18,7 +20,7 @@
                     <span class="text-item">MEDICAMENTOS</span>
                 </div> 
             </NuxtLink>
-            <NuxtLink to="/usoMedicacao">
+            <NuxtLink to="">
                 <div class="link-item">
                     <div class="icon-item">
                         <v-icon icon="mdi-calendar" size="x-large"></v-icon>
@@ -51,6 +53,11 @@ export default {
 .bg-grey{
     background-color: #969696;
     border-radius: 0px 25px 25px 0px;
+}
+
+.link-home{
+    text-decoration: none;
+    color: #000000;
 }
 
 .cl-black{
