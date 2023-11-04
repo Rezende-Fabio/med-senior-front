@@ -1,7 +1,7 @@
 <template>
-    <v-app-bar :elevation="7" class="flex-end">
+    <v-app-bar :elevation="7">
         <NuxtLink to="/desconforto" class="link-home">
-            <v-btn prepend-icon="mdi-sick">
+            <v-btn prepend-icon="mdi-emoticon-sick-outline">
                 Está com algum desconforto?
             </v-btn>
         </NuxtLink>
@@ -23,7 +23,7 @@ export default {
 </script>
 
 <style>
-.app-bar {
+.v-toolbar__content {
     display: flex !important;
     justify-content: flex-end !important;
     width: 100% !important;    
