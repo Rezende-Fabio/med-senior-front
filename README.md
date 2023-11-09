@@ -5,6 +5,7 @@
 * [Configurando a aplicação](#configurando-a-aplicação)
     * [Instalando as dependências](#instalando-as-dependências)
     * [Rodando a aplicação](#rodando-a-aplicação)
+* [Rodando a aplicação com Docker](#rodando-a-aplicação-com-docker)
 * [Outros repositórios](#outros-repositórios)
 * [Colaboradores](#colaboradores)
 
@@ -36,6 +37,127 @@ $ npm run dev
 ```
 
 Após a aplicação terminar de subir, já vai ser possível realizar o acesso através de qualquer navegador usando a URL: http://localhost:3000.
+
+## Rodando a aplicação com Docker
+
+Para rodar a aplicação em Docker irá ser utilizado o docker compose juntamente com o Dockerfile que está nesse repositório e nos outros [componentes ](#outros-repositórios) que complementam a aplicação.
+
+A seguir vamos ter dois arquivos composes, um deles é o **docker-compose-app.yml** e o **docker-compose-db.yml**, sendo o *-app para a aplicação junto com os componentes e o *-db para o banco de dados.
+
+
+### docker-compose-app.yml
+```
+version: '3.7'
+
+services:
+  med-senior-api:
+    container_name: med-senior-api-container
+    restart: always
+    build:
+      context: ./med-senior-api
+      dockerfile: ./Dockerfile
+    environment:
+      - DATABASE_URL=mongodb://172.18.0.1:27017/admin
+    expose:
+      - '5000'
+    ports:
+      - '5000:5000'
+    networks:
+      - clusterGeral
+  
+  med-senior-front:
+    container_name: med-senior-front-container
+    restart: always
+    build:
+      context: ./med-senior-front
+      dockerfile: ./Dockerfile
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    networks:
+      - clusterGeral
+  
+networks:
+  clusterGeral:
+```
+
+### docker-compose-db.yml
+```
+version: '3.7'
+
+services:
+  mongo1:
+    image: mongo:5
+    container_name: mongo1-container
+    restart: always
+    expose:
+      - '27017'
+    ports:
+      - '27017:27017'
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo1
+    networks:
+      - clusterGeral
+  
+  mongo2:
+    image: mongo:5
+    container_name: mongo2-container
+    restart: always
+    expose:
+      - '27017'
+    ports:
+      - '27018:27017'
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo2
+    networks:
+      - clusterGeral
+
+  mongo3:
+    image: mongo:5
+    container_name: mongo3-container
+    restart: always
+    expose:
+      - '27017'
+    ports:
+      - '27019:27017'
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo3
+    networks:
+      - clusterGeral
+
+  mongo-ui:
+    image: mongo-express
+    container_name: mongo-ui
+    restart: always
+    expose: 
+      - '8081'
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://172.18.0.1:27017
+    networks:
+      - clusterGeral
+networks:
+  clusterGeral:
+
+```
+
+#### Rodando os dockers compose
+
+Para iniciar a aplicação primeiro é necessário salvar os arquivo .yml acima na pasta onde todos os projetos vão estar, após salvar os arquivos devem ser necessários os seguintes comandos:
+
+```bash
+$ docker compose -f docker-compose-db.yml -f docker-compose-app.yml up -d
+
+$ docker exec -it mongo1-container mongosh --eval "rs.initiate({
+ _id: \"myReplicaSet\",
+ members: [
+   {_id: 0, host: \"mongo1\"},
+   {_id: 1, host: \"mongo2\"},
+   {_id: 2, host: \"mongo3\"}
+ ]
+})"
+
+$ docker exec -it med-senior-api-container npx prisma db push
+```
 
 ## Outros repositórios
 
