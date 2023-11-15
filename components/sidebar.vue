@@ -28,7 +28,7 @@
                     <span class="text-item">CONSULTAS</span>
                 </div> 
             </NuxtLink>
-            <NuxtLink to="">
+            <NuxtLink to="/prontuario">
                 <div class="link-item">
                     <div class="icon-item">
                         <v-icon icon="mdi-file" size="x-large"></v-icon>
