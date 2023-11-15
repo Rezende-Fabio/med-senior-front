@@ -11,7 +11,7 @@
                 </div>
             </NuxtLink>
         </v-list-item>
-        <v-list style="height: 70%;" class="d-flex flex-column justify-space-between" nav>
+        <v-list style="height: 40%;" class="d-flex flex-column justify-space-between" nav>
             <NuxtLink to="/medicamentos">
                 <div class="link-item">
                     <div class="icon-item">
@@ -20,7 +20,7 @@
                     <span class="text-item">MEDICAMENTOS</span>
                 </div> 
             </NuxtLink>
-            <NuxtLink to="">
+            <NuxtLink to="/consultas">
                 <div class="link-item">
                     <div class="icon-item">
                         <v-icon icon="mdi-calendar" size="x-large"></v-icon>
@@ -51,7 +51,7 @@ export default {
 
 <style>
 .bg-grey{
-    background-color: #969696;
+    background-color: #B0C4DE !important;
     border-radius: 0px 25px 25px 0px;
 }
 
@@ -74,7 +74,7 @@ export default {
 }
 
 .icon-header{
-    background-color: #b7b7b7;
+    background-color: #EFEFEF;
     border-radius: 50%;
     padding: 15px;
     margin-bottom: 0.5rem;
@@ -87,20 +87,34 @@ export default {
     width: 100%;
 }
 
-.icon-item{
-    background-color: #b7b7b7;
-    border-radius: 50%;
-    padding: 20px;
-}
-
-.text-item{
+.text{
     text-decoration: none;
     font-size: 20px;
     font-weight: bold;
-    background-color: #b7b7b7;
+    color: #000000;
+}
+
+.icon-item{
+    background-color: #708090;
+    border-radius: 50%;
+    padding: 20px;
+    color: #FFFAFA;
+    display: block;
+}
+
+.text-item{
+    width:70%;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #708090;
     padding: 10px;
     border-radius: 0px 10px 10px 0px;
     position: absolute;
     margin-left: 3.2rem;
+    color: #FFFAFA;
+}
+.text-item:active{
+    color: #585555;
 }
 </style>
