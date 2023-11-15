@@ -1,7 +1,7 @@
 <template>
-    <Sidebar/>
+    <Sidebar />
     <v-main>
-        <Appbar/>
+        <Appbar />
         <div class="div-main">
             <div class="d-flex flex-column mb-6">
                 <v-sheet class="ma-2 pa-2">
@@ -35,27 +35,27 @@
                                             <v-container>
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="medicacao.nome"
+                                                        <v-text-field v-model="consulta.especialidade"
                                                             label="Tipo de Especialidade"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="medicacao.descricao"
+                                                        <v-text-field v-model="consulta.medico"
                                                             label="Nome do Médico"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="medicacao.modoAdm"
+                                                        <v-text-field v-model="consulta.dataConsulta"
                                                             label="Data da Consulta"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="medicacao.modoAdm"
+                                                        <v-text-field v-model="consulta.horaConsulta"
                                                             label="Horário da Consulta"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="medicacao.modoAdm"
+                                                        <v-text-field v-model="consulta.local"
                                                             label="Local da Consulta"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-textarea v-model="medicacao.modoAdm"
+                                                        <v-textarea v-model="consulta.documentos"
                                                             label="O que levar?"></v-textarea>
                                                     </v-row>
                                                 </v-col>
@@ -85,7 +85,7 @@
                                         <v-sheet>
                                             <v-card-text class="text-h5 mb-10 break-title">
                                                 <div>
-                                                    <h5>Tem certeza que deseja excluir o(a) medicação {{ medicacao.nome }}?
+                                                    <h5>Tem certeza que deseja excluir a consulta com {{ consulta.medico }}?
                                                     </h5>
                                                 </div>
                                             </v-card-text>
@@ -138,9 +138,8 @@ const idosoId = cookie.value;
 
 console.log(idosoId);
 
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'consulta/todos/' + idosoId));
 
-const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
 const dialog = ref(false);
 const dialogDelete = ref(false);
 const titleAtlert = ref("");
@@ -160,19 +159,24 @@ const headers = [
         key: 'especialidade',
     },
     { title: 'Médico', key: 'medico' },
-    { title: 'Data', key: 'data' },
-    { title: 'Horário', key: 'horario'},
-    { title: 'Local', key: 'local'},
+    { title: 'Data', key: 'dataConsulta' },
+    { title: 'Horário', key: 'horaConsulta' },
+    { title: 'Local', key: 'local' },
+    { title: "O que levar", key: "documentos" },
+    { title: 'Ações', key: 'actions', sortable: false },
 ];
 
 const desserts = ref([]);
 
 const editedIndex = ref(-1);
-const medicacao = ref({
+const consulta = ref({
     id: "",
-    name: "",
-    descricao: "",
-    modoAdm: "",
+    dataConsulta: "",
+    horaConsulta: "",
+    local: "",
+    especialidade: "",
+    medico: "",
+    documentos: "",
     idosoId: idosoId
 });
 
@@ -185,9 +189,12 @@ const initialize = () => {
     data.value.forEach(element => {
         var row = {
             id: element.id,
-            nome: element.nome,
-            descricao: element.descricao,
-            modoAdm: element.modoAdm
+            dataConsulta: convertDateTimeToDate(element.dataHoraConsulta),
+            horaConsulta: convertDateTimeToTime(element.dataHoraConsulta),
+            local: element.local,
+            especialidade: element.especialidade,
+            medico: element.medico,
+            documentos: element.documentos
         }
         desserts.value.push(row);
     });
@@ -195,20 +202,20 @@ const initialize = () => {
 
 const editItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    medicacao.value = { ...item };
+    consulta.value = { ...item };
     dialog.value = true;
 };
 
 const deleteItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    medicacao.value = { ...item };
+    consulta.value = { ...item };
     dialogDelete.value = true;
 };
 
 const deleteItemConfirm = () => {
-    $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
+    $fetch(URL_SERVER + `consulta/${consulta.value.id}`, {
         method: 'DELETE',
-        body: JSON.stringify(medicacao.value)
+        body: JSON.stringify(consulta.value)
     })
         .then((response) => {
             typeAlert.value = "success";
@@ -232,11 +239,14 @@ const deleteItemConfirm = () => {
 const close = () => {
     dialog.value = false;
     editedIndex.value = -1;
-    medicacao.value = {
+    consulta.value = {
         id: "",
-        name: "",
-        descricao: "",
-        modoAdm: "",
+        dataConsulta: "",
+        horaConsulta: "",
+        local: "",
+        especialidade: "",
+        medico: "",
+        documentos: "",
         idosoId: idosoId
     }
 };
@@ -247,10 +257,19 @@ const closeDelete = () => {
 };
 
 const save = () => {
+    const bodyRequest = {
+        "dataHoraConsulta": converterParaDataHora(consulta.value.dataConsulta, consulta.value.horaConsulta),
+        "local": consulta.value.local,
+        "especialidade": consulta.value.especialidade,
+        "medico": consulta.value.medico,
+        "documentos": consulta.value.documentos,
+        "idosoId": idosoId
+    }
+
     if (editedIndex.value > -1) {
-        $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
+        $fetch(URL_SERVER + `consulta/${consulta.value.id}`, {
             method: 'PUT',
-            body: JSON.stringify(medicacao.value)
+            body: JSON.stringify(bodyRequest)
         })
             .then((response) => {
                 typeAlert.value = "success";
@@ -269,9 +288,9 @@ const save = () => {
                 dismissAlert();
             });
     } else {
-        $fetch(URL_SERVER + 'medicacao', {
+        $fetch(URL_SERVER + 'consulta', {
             method: 'POST',
-            body: JSON.stringify(medicacao.value)
+            body: JSON.stringify(bodyRequest)
         })
             .then((response) => {
                 typeAlert.value = "success";
@@ -294,15 +313,18 @@ const save = () => {
 };
 
 async function updateItemList() {
-    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
+    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'consulta/todos/' + idosoId));
 
     desserts.value = [];
     data.value.forEach(element => {
         var row = {
             id: element.id,
-            nome: element.nome,
-            descricao: element.descricao,
-            modoAdm: element.modoAdm
+            dataConsulta: convertDateTimeToDate(element.dataHoraConsulta),
+            horaConsulta: convertDateTimeToTime(element.dataHoraConsulta),
+            local: element.local,
+            especialidade: element.especialidade,
+            medico: element.medico,
+            documentos: element.documentos
         }
         desserts.value.push(row);
     });
