@@ -9,7 +9,6 @@
                     <hr>
                     <p>Nome: {{ idosoInfos.Nome }}</p>
                     <p>Data de nascimento: {{ idosoInfos.DataNasc }}</p>
-                    <p>Doenças: {{ idosoInfos.Doencas }}</p>
                     <p>Cuidador Responsável: {{ idosoInfos.NomeCuidador }}</p>
                 </div>
                 <div class="content-pront">
@@ -19,6 +18,7 @@
                         <p>Nome do medicamento: {{ usoMedicamento.nomeMedicamento }}</p>
                         <p>Dosagem: {{ usoMedicamento.dosagem }}</p>
                         <p>Intervalo: {{ usoMedicamento.intervalo }}</p>
+                        <p>Parar de tomar em: {{ usoMedicamento.dataFinal }}</p>
                     </div>
                 </div>
                 <div class="content-pront">
@@ -89,8 +89,7 @@ const initialize = async () => {
     idosoInfos.value = {
         Nome: data.Nome,
         DataNasc: convertDateTimeToDate(data.DataNasc),
-        Doencas: data.Doencas.length == 0 ? 'Sem doenças' : data.Doencas,
-        NomeCuidador: data.Cuidador.pop().Nome
+        NomeCuidador: data.Cuidador.length == 0 ? 'Sem cuidador vinculado' : data.Cuidador.pop().Nome
     };
 
     usoMedicamentos.value = [];
@@ -98,7 +97,8 @@ const initialize = async () => {
         const row = {
             nomeMedicamento: searhMedicineName(element.medId, data.Medicacao),
             dosagem: element.dosagem,
-            intervalo: element.intervalo
+            intervalo: element.intervalo,
+            dataFinal: convertDateTimeToDate(element.dataFinal)
         }
 
         usoMedicamentos.value.push(row);
@@ -139,8 +139,8 @@ const initialize = async () => {
 
         sintomas.value.push(row)
     });
-
 }
+
 initialize();
 </script>
 

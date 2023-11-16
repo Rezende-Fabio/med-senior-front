@@ -44,10 +44,14 @@
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field v-model="consulta.dataConsulta"
+                                                            messages="Formato: dd/mm/yyyy"
+                                                            :rules="[rules.date]"
                                                             label="Data da Consulta"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field v-model="consulta.horaConsulta"
+                                                            :rules="[rules.time]"
+                                                            messages="Formato: hh:mm"
                                                             label="Horário da Consulta"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
@@ -146,6 +150,11 @@ const titleAtlert = ref("");
 const textAlert = ref("");
 const typeAlert = ref("");
 const alert = ref(false);
+
+const rules = {
+    date: value => /^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/\d{4}$/.test(value) || 'Data inválida',
+    time: value => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value) || 'Formato de hora inválido'
+};
 
 const headers = [
     {
