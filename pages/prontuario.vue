@@ -40,6 +40,19 @@
                         <p>Hora: {{ consulta.horaConsulta }}</p>
                     </div>
                 </div>
+                <div class="content-pront">
+                    <h2>Sintomas ou desconfortos</h2>
+                    <hr>
+                    <div class="content-pront" v-for="sintoma in sintomas">
+                        <p>Sintoma: {{ sintoma.descricao }}</p>
+                        <hr>
+                        <ul>
+                            <li class="list" v-for="ocorrencia in ocorrencias">
+                                {{ ocorrencia }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </v-main>
@@ -62,6 +75,8 @@ const idosoInfos = ref({});
 const usoMedicamentos = ref([]);
 const medicamentos = ref([]);
 const consultas = ref([]);
+const sintomas = ref([]);
+const ocorrencias = ref([]);
 
 const searhMedicineName = (medId, medicines) => {
     const medicine = medicines.find(e => e.id == medId);
@@ -69,7 +84,6 @@ const searhMedicineName = (medId, medicines) => {
 }
 
 const initialize = async () => {
-
     const res = await fetch(URL_SERVER + 'idoso/' + idosoId);
     const data = await res.json()
 
@@ -114,8 +128,26 @@ const initialize = async () => {
         }
         consultas.value.push(row)
     });
-}
 
+    sintomas.value = [];
+    data.Sintoma.forEach(element => {
+        const row = {
+            descricao: element.descricao,
+        }
+
+        sintomas.value.push(row)
+    });
+
+    ocorrencias.value = [];
+    data.Sintoma.ocorrencia.forEach(element => {
+        const row = {
+            data: convertDateTimeToDate(element),
+            hora: convertDateTimeToTime(element)
+        }
+
+        ocorrencias.value.push(row);
+    });
+}
 initialize();
 </script>
 
