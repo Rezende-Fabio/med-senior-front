@@ -13,6 +13,8 @@ export function convertDateToDatetime(dateString: string) {
 
         const date = new Date(`${year}-${month}-${day} ${hours}:${minutes}:${seconds}`);
         date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        console.log(date);
+        
         return date.toISOString();
     } catch (error) {
         return new Error();

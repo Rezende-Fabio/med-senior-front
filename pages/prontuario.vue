@@ -44,13 +44,14 @@
                     <h2>Sintomas ou desconfortos</h2>
                     <hr>
                     <div class="content-pront" v-for="sintoma in sintomas">
-                        <p>Sintoma: {{ sintoma.descricao }}</p>
-                        <hr>
-                        <ul>
-                            <li class="list" v-for="ocorrencia in ocorrencias">
-                                {{ ocorrencia }}
-                            </li>
-                        </ul>
+                        <div class="content-sintoma">
+                            <p class="title-sintoma">{{ sintoma.descricao }}</p>
+                            <ul>
+                                <li class="list-sintoma" v-for="data in sintoma.datas">
+                                    {{ data }}
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -69,14 +70,12 @@ const URL_SERVER = "http://localhost:5000/";
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
 
-console.log(idosoId);
 
 const idosoInfos = ref({});
 const usoMedicamentos = ref([]);
 const medicamentos = ref([]);
 const consultas = ref([]);
 const sintomas = ref([]);
-const ocorrencias = ref([]);
 
 const searhMedicineName = (medId, medicines) => {
     const medicine = medicines.find(e => e.id == medId);
@@ -86,8 +85,6 @@ const searhMedicineName = (medId, medicines) => {
 const initialize = async () => {
     const res = await fetch(URL_SERVER + 'idoso/' + idosoId);
     const data = await res.json()
-
-    console.log(data);
 
     idosoInfos.value = {
         Nome: data.Nome,
@@ -131,22 +128,18 @@ const initialize = async () => {
 
     sintomas.value = [];
     data.Sintoma.forEach(element => {
+        const datas = element.ocorrencia.map(item => {
+            return `${convertDateTimeToDate(item)} ${convertDateTimeToTime(item)}`;
+        });
+
         const row = {
             descricao: element.descricao,
+            datas: datas,
         }
 
         sintomas.value.push(row)
     });
 
-    ocorrencias.value = [];
-    data.Sintoma.ocorrencia.forEach(element => {
-        const row = {
-            data: convertDateTimeToDate(element),
-            hora: convertDateTimeToTime(element)
-        }
-
-        ocorrencias.value.push(row);
-    });
 }
 initialize();
 </script>
@@ -169,6 +162,7 @@ initialize();
     margin-top: 80px;
     border: 1px solid #000;
     border-radius: 10px;
+    margin-bottom: 80px;
 }
 
 hr {
@@ -180,5 +174,18 @@ hr {
 
 .content-pront {
     margin-bottom: 40px;
+}
+
+.content-sintoma{
+    margin-left: 1.5rem;
+}
+
+.title-sintoma{
+    font-weight: bold;
+    font-size: 16.5px;
+}
+
+.list-sintoma{
+    margin-left: 2rem;
 }
 </style>

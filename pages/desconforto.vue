@@ -69,6 +69,8 @@ function updateSintoma(newValue) {
   sintoma.value = newValue.target.value;
 }
 
+const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'America/Sao_Paulo' };
+
 async function save() {
     let data;
     const cookie = useCookie('idUsuario');
@@ -79,10 +81,8 @@ async function save() {
         data = {
             idosoId: idosoId,
             descricao: sintoma.value,
-            ocorrencia: new Date()
+            ocorrencia: convertDateToDatetime(new Date().toLocaleDateString('pt-BR', options))
         }
-
-        console.log(data);
         
         const res = await fetch(URL_SERVER + `sintoma`, {
             method: "POST",
