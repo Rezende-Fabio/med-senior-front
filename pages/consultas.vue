@@ -1,11 +1,11 @@
 <template>
-    <Sidebar/>
+    <Sidebar />
     <v-main>
-        <Appbar/>
+        <Appbar />
         <div class="div-main">
             <div class="d-flex flex-column mb-6">
                 <v-sheet class="ma-2 pa-2">
-                    <h2>Medicamentos</h2>
+                    <h2>Consultas</h2>
                 </v-sheet>
                 <div v-if="alert === true" class="alert">
                     <v-alert :type="typeAlert" :title="titleAtlert" :text="textAlert"></v-alert>
@@ -19,14 +19,11 @@
                                 <v-spacer></v-spacer>
                                 <v-dialog v-model="dialog" max-width="500px">
                                     <template v-slot:activator="{ props }">
-                                        <v-btn class="mb-2 btn-new-estoque">
-                                            Compra de Medicamento
-                                        </v-btn>
                                         <v-btn prepend-icon="mdi-plus" class="mb-2 btn-new" v-bind="props">
                                             <template v-slot:prepend>
                                                 <v-icon color="success"></v-icon>
                                             </template>
-                                            Cadastrar Medicamento
+                                            Cadastrar Consulta
                                         </v-btn>
                                     </template>
                                     <v-card style="padding: 20px;">
@@ -38,16 +35,32 @@
                                             <v-container>
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="medicacao.nome"
-                                                            label="Nome do Medicamento"></v-text-field>
+                                                        <v-text-field v-model="consulta.especialidade"
+                                                            label="Tipo de Especialidade"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-textarea v-model="medicacao.descricao"
-                                                            label="Descrição"></v-textarea>
+                                                        <v-text-field v-model="consulta.medico"
+                                                            label="Nome do Médico"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-select v-model="medicacao.modoAdm" :items="items"
-                                                            label="Modo de Administração (ml/qtd)"></v-select>
+                                                        <v-text-field v-model="consulta.dataConsulta"
+                                                            messages="Formato: dd/mm/yyyy"
+                                                            :rules="[rules.date]"
+                                                            label="Data da Consulta"></v-text-field>
+                                                    </v-row>
+                                                    <v-row cols="12" sm="6" md="4">
+                                                        <v-text-field v-model="consulta.horaConsulta"
+                                                            :rules="[rules.time]"
+                                                            messages="Formato: hh:mm"
+                                                            label="Horário da Consulta"></v-text-field>
+                                                    </v-row>
+                                                    <v-row cols="12" sm="6" md="4">
+                                                        <v-text-field v-model="consulta.local"
+                                                            label="Local da Consulta"></v-text-field>
+                                                    </v-row>
+                                                    <v-row cols="12" sm="6" md="4">
+                                                        <v-textarea v-model="consulta.documentos"
+                                                            label="O que levar?"></v-textarea>
                                                     </v-row>
                                                 </v-col>
                                             </v-container>
@@ -76,7 +89,7 @@
                                         <v-sheet>
                                             <v-card-text class="text-h5 mb-10 break-title">
                                                 <div>
-                                                    <h5>Tem certeza que deseja excluir o(a) medicação {{ medicacao.nome }}?
+                                                    <h5>Tem certeza que deseja excluir a consulta com {{ consulta.medico }}?
                                                     </h5>
                                                 </div>
                                             </v-card-text>
@@ -129,15 +142,19 @@ const idosoId = cookie.value;
 
 console.log(idosoId);
 
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
+const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'consulta/todos/' + idosoId));
 
-const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
 const dialog = ref(false);
 const dialogDelete = ref(false);
 const titleAtlert = ref("");
 const textAlert = ref("");
 const typeAlert = ref("");
 const alert = ref(false);
+
+const rules = {
+    date: value => /^(0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/\d{4}$/.test(value) || 'Data inválida',
+    time: value => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value) || 'Formato de hora inválido'
+};
 
 const headers = [
     {
@@ -146,28 +163,34 @@ const headers = [
         align: ' d-none'
     },
     {
-        title: 'Nome Medicamento',
+        title: 'Especialidade',
         align: 'start',
-        key: 'nome',
+        key: 'especialidade',
     },
-    { title: 'Descrição', key: 'descricao' },
-    { title: 'Ml/Qtd', key: 'modoAdm' },
+    { title: 'Médico', key: 'medico' },
+    { title: 'Data', key: 'dataConsulta' },
+    { title: 'Horário', key: 'horaConsulta' },
+    { title: 'Local', key: 'local' },
+    { title: "O que levar", key: "documentos" },
     { title: 'Ações', key: 'actions', sortable: false },
 ];
 
 const desserts = ref([]);
 
 const editedIndex = ref(-1);
-const medicacao = ref({
+const consulta = ref({
     id: "",
-    name: "",
-    descricao: "",
-    modoAdm: "",
+    dataConsulta: "",
+    horaConsulta: "",
+    local: "",
+    especialidade: "",
+    medico: "",
+    documentos: "",
     idosoId: idosoId
 });
 
 const formTitle = computed(() => {
-    return editedIndex.value === -1 ? 'Cadastrar Medicamento' : 'Editar Medicamento';
+    return editedIndex.value === -1 ? 'Cadastrar Consulta' : 'Editar Consulta';
 });
 
 const initialize = () => {
@@ -175,9 +198,12 @@ const initialize = () => {
     data.value.forEach(element => {
         var row = {
             id: element.id,
-            nome: element.nome,
-            descricao: element.descricao,
-            modoAdm: element.modoAdm
+            dataConsulta: convertDateTimeToDate(element.dataHoraConsulta),
+            horaConsulta: convertDateTimeToTime(element.dataHoraConsulta),
+            local: element.local,
+            especialidade: element.especialidade,
+            medico: element.medico,
+            documentos: element.documentos
         }
         desserts.value.push(row);
     });
@@ -185,25 +211,25 @@ const initialize = () => {
 
 const editItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    medicacao.value = { ...item };
+    consulta.value = { ...item };
     dialog.value = true;
 };
 
 const deleteItem = (item) => {
     editedIndex.value = desserts.value.indexOf(item);
-    medicacao.value = { ...item };
+    consulta.value = { ...item };
     dialogDelete.value = true;
 };
 
 const deleteItemConfirm = () => {
-    $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
+    $fetch(URL_SERVER + `consulta/${consulta.value.id}`, {
         method: 'DELETE',
-        body: JSON.stringify(medicacao.value)
+        body: JSON.stringify(consulta.value)
     })
         .then((response) => {
             typeAlert.value = "success";
             titleAtlert.value = "Sucesso";
-            textAlert.value = "Medicação excluida com sucesso!";
+            textAlert.value = "Consulta excluida com sucesso!";
             alert.value = true;
             dismissAlert();
             updateItemList();
@@ -211,7 +237,7 @@ const deleteItemConfirm = () => {
         .catch((error) => {
             typeAlert.value = "error";
             titleAtlert.value = "Erro";
-            textAlert.value = "Não foi possível excluir a medicação!";
+            textAlert.value = "Não foi possível excluir a consulta!";
             alert.value = true;
             console.error(error);
             dismissAlert();
@@ -222,11 +248,14 @@ const deleteItemConfirm = () => {
 const close = () => {
     dialog.value = false;
     editedIndex.value = -1;
-    medicacao.value = {
+    consulta.value = {
         id: "",
-        name: "",
-        descricao: "",
-        modoAdm: "",
+        dataConsulta: "",
+        horaConsulta: "",
+        local: "",
+        especialidade: "",
+        medico: "",
+        documentos: "",
         idosoId: idosoId
     }
 };
@@ -237,15 +266,24 @@ const closeDelete = () => {
 };
 
 const save = () => {
+    const bodyRequest = {
+        "dataHoraConsulta": converterParaDataHora(consulta.value.dataConsulta, consulta.value.horaConsulta),
+        "local": consulta.value.local,
+        "especialidade": consulta.value.especialidade,
+        "medico": consulta.value.medico,
+        "documentos": consulta.value.documentos,
+        "idosoId": idosoId
+    }
+
     if (editedIndex.value > -1) {
-        $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
+        $fetch(URL_SERVER + `consulta/${consulta.value.id}`, {
             method: 'PUT',
-            body: JSON.stringify(medicacao.value)
+            body: JSON.stringify(bodyRequest)
         })
             .then((response) => {
                 typeAlert.value = "success";
                 titleAtlert.value = "Sucesso";
-                textAlert.value = "Medicação alterada com sucesso!";
+                textAlert.value = "Consulta alterada com sucesso!";
                 alert.value = true;
                 dismissAlert();
                 updateItemList();
@@ -253,20 +291,20 @@ const save = () => {
             .catch((error) => {
                 typeAlert.value = "error";
                 titleAtlert.value = "Erro";
-                textAlert.value = "Não foi possível alterar a medicação!";
+                textAlert.value = "Não foi possível alterar a consulta!";
                 alert.value = true;
                 console.error(error);
                 dismissAlert();
             });
     } else {
-        $fetch(URL_SERVER + 'medicacao', {
+        $fetch(URL_SERVER + 'consulta', {
             method: 'POST',
-            body: JSON.stringify(medicacao.value)
+            body: JSON.stringify(bodyRequest)
         })
             .then((response) => {
                 typeAlert.value = "success";
                 titleAtlert.value = "Sucesso";
-                textAlert.value = "Medicação incluida com sucesso!";
+                textAlert.value = "Consulta incluida com sucesso!";
                 alert.value = true;
                 dismissAlert();
                 updateItemList();
@@ -274,7 +312,7 @@ const save = () => {
             .catch((error) => {
                 typeAlert.value = "error";
                 titleAtlert.value = "Erro";
-                textAlert.value = "Não foi possível incluir a medicação!";
+                textAlert.value = "Não foi possível incluir a consulta!";
                 alert.value = true;
                 console.error(error);
                 dismissAlert();
@@ -284,15 +322,18 @@ const save = () => {
 };
 
 async function updateItemList() {
-    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
+    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'consulta/todos/' + idosoId));
 
     desserts.value = [];
     data.value.forEach(element => {
         var row = {
             id: element.id,
-            nome: element.nome,
-            descricao: element.descricao,
-            modoAdm: element.modoAdm
+            dataConsulta: convertDateTimeToDate(element.dataHoraConsulta),
+            horaConsulta: convertDateTimeToTime(element.dataHoraConsulta),
+            local: element.local,
+            especialidade: element.especialidade,
+            medico: element.medico,
+            documentos: element.documentos
         }
         desserts.value.push(row);
     });

@@ -1,30 +1,72 @@
 <template>
-    <v-navigation-drawer>
-        <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
-        <v-divider></v-divider>
-        <v-list style="height: 80%;" class="d-flex flex-column justify-space-between" nav>
-            <NuxtLink to="/medicamentos">
-                <v-list-item prepend-icon="mdi-pill" title="MEDICAMENTOS" value=""></v-list-item>
-            </NuxtLink>
-            <v-list-item prepend-icon="mdi-calendar" title="CONSULTAS" value=""></v-list-item>
-            <v-list-item prepend-icon="mdi-file" title="PRONTUÁRIO" value=""></v-list-item>
-        </v-list>
-    </v-navigation-drawer>
+    <Sidebar />
     <v-main>
-        <v-app-bar :elevation="7">
-            <v-btn prepend-icon="mdi-sick">
-                Está com algum desconforto?
-            </v-btn>
-            <v-btn prepend-icon="mdi-phone">
-                Emergência
-            </v-btn>
-        </v-app-bar>
-        <h1>TESTE</h1>
+        <Appbar/>
+        <div class="div-main-home">
+            <NuxtLink to="/medicamentos" class="card">
+                <div class="icon">
+                    <v-icon icon="mdi-pill" size="x-large"></v-icon>
+                </div>
+                <div class="text">
+                    <span>Deseja cadastrar um novo medicamento?</span>
+                </div>
+            </NuxtLink>
+            <NuxtLink to="/usoMedicacao" class="card">
+                <div class="icon">
+                    <v-icon icon="mdi-clock" size="x-large"></v-icon>
+                </div>
+                <div class="text">
+                    <span>Deseja cadastrar um horário do seu medicamento?</span>
+                </div>
+            </NuxtLink>
+        </div>
     </v-main>
-</template>
+</template> 
 
 <script setup>
-
+import Sidebar from '../components/sidebar.vue';
+import Appbar from '../components/appbar.vue';
 </script>
 
-<style></style>
+<style>
+.div-main-home {
+    padding-left: 50px;
+    padding-right: 50px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.card {
+    text-decoration: none;
+    color: #000000;
+    width: 25%;
+    height: 45%;
+    background-color: #d8d8d8;
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.icon {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.icon i {
+    font-size: 120px;
+}
+
+.text {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+}
+</style>

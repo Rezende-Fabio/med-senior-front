@@ -1,75 +1,175 @@
-# Nuxt 3 Minimal Starter
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Med Senior - Front End
 
-## Setup
+* [Sobre](#sobre)
+* [Configurando a aplicação](#configurando-a-aplicação)
+    * [Instalando as dependências](#instalando-as-dependências)
+    * [Rodando a aplicação](#rodando-a-aplicação)
+* [Rodando a aplicação com Docker](#rodando-a-aplicação-com-docker)
+* [Outros repositórios](#outros-repositórios)
+* [Colaboradores](#colaboradores)
 
-Make sure to install the dependencies:
+## Sobre
 
-```bash
-# npm
-npm install
+> Projeto desenvolvido para as disciplinas de DSW e PDM
 
-# pnpm
-pnpm install
+Idosos muitas vezes enfrentam desafios em sua vida diária e podem precisar de ajuda em situações de emergência.
 
-# yarn
-yarn install
+Solução Proposta: Um aplicativo web que oferece recursos de assistência, como alertas de medicamentos, rastreamento de saúde e botões de emergência para idosos. Ele também pode permitir que familiares e cuidadores monitorem o bem-estar dos idosos remotamente.
 
-# bun
-bun install
-```
+## Configurando a aplicação
+### Instalando as dependências
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Rode o seguinte comando para instalar as dependências do projeto:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+$ npm install
 ```
 
-## Production
+### Rodando a aplicação
 
-Build the application for production:
+> Obs.: Não esquecer de subir a [API](https://github.com/gcostacoelho/med-senior-api) antes da inicialização da aplicação.<br>
+
+Após realizar todas as etapas acima, já podemos iniciar a aplicação com o seguinte comando:
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+$ npm run dev
 ```
 
-Locally preview production build:
+Após a aplicação terminar de subir, já vai ser possível realizar o acesso através de qualquer navegador usando a URL: http://localhost:3000.
+
+## Rodando a aplicação com Docker
+
+Para rodar a aplicação em Docker irá ser utilizado o docker compose juntamente com o Dockerfile que está nesse repositório e nos outros [componentes ](#outros-repositórios) que complementam a aplicação.
+
+A seguir vamos ter dois arquivos composes, um deles é o **docker-compose-app.yml** e o **docker-compose-db.yml**, sendo o *-app para a aplicação junto com os componentes e o *-db para o banco de dados.
+
+
+### docker-compose-app.yml
+```
+version: '3.7'
+
+services:
+  med-senior-api:
+    container_name: med-senior-api-container
+    restart: always
+    build:
+      context: ./med-senior-api
+      dockerfile: ./Dockerfile
+    environment:
+      - DATABASE_URL=mongodb://172.18.0.1:27017/admin
+    expose:
+      - '5000'
+    ports:
+      - '5000:5000'
+    networks:
+      - clusterGeral
+  
+  med-senior-front:
+    container_name: med-senior-front-container
+    restart: always
+    build:
+      context: ./med-senior-front
+      dockerfile: ./Dockerfile
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    networks:
+      - clusterGeral
+  
+networks:
+  clusterGeral:
+```
+
+### docker-compose-db.yml
+```
+version: '3.7'
+
+services:
+  mongo1:
+    image: mongo:5
+    container_name: mongo1-container
+    restart: always
+    expose:
+      - '27017'
+    ports:
+      - '27017:27017'
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo1
+    networks:
+      - clusterGeral
+  
+  mongo2:
+    image: mongo:5
+    container_name: mongo2-container
+    restart: always
+    expose:
+      - '27017'
+    ports:
+      - '27018:27017'
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo2
+    networks:
+      - clusterGeral
+
+  mongo3:
+    image: mongo:5
+    container_name: mongo3-container
+    restart: always
+    expose:
+      - '27017'
+    ports:
+      - '27019:27017'
+    command: mongod --replSet myReplicaSet --bind_ip localhost,mongo3
+    networks:
+      - clusterGeral
+
+  mongo-ui:
+    image: mongo-express
+    container_name: mongo-ui
+    restart: always
+    expose: 
+      - '8081'
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://172.18.0.1:27017
+    networks:
+      - clusterGeral
+networks:
+  clusterGeral:
+
+```
+
+#### Rodando os dockers compose
+
+Para iniciar a aplicação primeiro é necessário salvar os arquivo .yml acima na pasta onde todos os projetos vão estar, após salvar os arquivos devem ser necessários os seguintes comandos:
 
 ```bash
-# npm
-npm run preview
+$ docker compose -f docker-compose-db.yml -f docker-compose-app.yml up -d
 
-# pnpm
-pnpm run preview
+$ docker exec -it mongo1-container mongosh --eval "rs.initiate({
+ _id: \"myReplicaSet\",
+ members: [
+   {_id: 0, host: \"mongo1\"},
+   {_id: 1, host: \"mongo2\"},
+   {_id: 2, host: \"mongo3\"}
+ ]
+})"
 
-# yarn
-yarn preview
-
-# bun
-bun run preview
+$ docker exec -it med-senior-api-container npx prisma db push
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Outros repositórios
+
+- Módulo de autenticação: [Med Senior - Auth](https://github.com/gcostacoelho/med-senior-auth)
+
+- Back End : [Med Senior - API](https://github.com/gcostacoelho/med-senior-api)
+
+- Mobile (desenvolvido em Flutter): [Med Senior - Mobile](https://github.com/Rezende-Fabio/med-senior-mobile)
+
+## Colaboradores
+
+- [Gustavo Coelho](https://github.com/gcostacoelho)
+- [Mateus Moraes](https://github.com/Mateus11Toledo)
+- [Hellen Turri](https://github.com/hellenTurri)
+- [Karin Kagi](https://github.com/karinkagi)
