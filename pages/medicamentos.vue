@@ -1,7 +1,7 @@
 <template>
-    <Sidebar/>
+    <Sidebar />
     <v-main>
-        <Appbar/>
+        <Appbar />
         <div class="div-main">
             <div class="d-flex flex-column mb-6">
                 <v-sheet class="ma-2 pa-2">
@@ -126,10 +126,19 @@ import Appbar from '../components/appbar.vue';
 
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
+const token = useCookie("access_token").value;
 
 console.log(idosoId);
 
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
+const { data } = await useAsyncData('', async () => {
+    const resp = await $fetch(URL_SERVER + 'medicacao/todos/' + idosoId, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    return resp;
+});
 
 const items = ref(['Comprimido', 'Gotas', 'Líquido', 'Pomada']);
 const dialog = ref(false);
@@ -198,7 +207,10 @@ const deleteItem = (item) => {
 const deleteItemConfirm = () => {
     $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
         method: 'DELETE',
-        body: JSON.stringify(medicacao.value)
+        body: JSON.stringify(medicacao.value),
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     })
         .then((response) => {
             typeAlert.value = "success";
@@ -240,7 +252,10 @@ const save = () => {
     if (editedIndex.value > -1) {
         $fetch(URL_SERVER + `medicacao/${medicacao.value.id}`, {
             method: 'PUT',
-            body: JSON.stringify(medicacao.value)
+            body: JSON.stringify(medicacao.value),
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
             .then((response) => {
                 typeAlert.value = "success";
@@ -261,7 +276,10 @@ const save = () => {
     } else {
         $fetch(URL_SERVER + 'medicacao', {
             method: 'POST',
-            body: JSON.stringify(medicacao.value)
+            body: JSON.stringify(medicacao.value),
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
             .then((response) => {
                 typeAlert.value = "success";
@@ -284,7 +302,15 @@ const save = () => {
 };
 
 async function updateItemList() {
-    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/todos/'+ idosoId));
+    const { data } = await useAsyncData('', async () => {
+        const resp = await $fetch(URL_SERVER + 'medicacao/todos/' + idosoId, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return resp;
+    });
 
     desserts.value = [];
     data.value.forEach(element => {

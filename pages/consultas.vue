@@ -44,13 +44,11 @@
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field v-model="consulta.dataConsulta"
-                                                            messages="Formato: dd/mm/yyyy"
-                                                            :rules="[rules.date]"
+                                                            messages="Formato: dd/mm/yyyy" :rules="[rules.date]"
                                                             label="Data da Consulta"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="consulta.horaConsulta"
-                                                            :rules="[rules.time]"
+                                                        <v-text-field v-model="consulta.horaConsulta" :rules="[rules.time]"
                                                             messages="Formato: hh:mm"
                                                             label="Horário da Consulta"></v-text-field>
                                                     </v-row>
@@ -139,10 +137,20 @@ import Appbar from '../components/appbar.vue';
 
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
+const token = useCookie("access_token").value
 
 console.log(idosoId);
+console.log(token);
 
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'consulta/todos/' + idosoId));
+const { data } = await useAsyncData('', async () => {
+    const resp = await $fetch(URL_SERVER + 'consulta/todos/' + idosoId, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    return resp;
+});
 
 const dialog = ref(false);
 const dialogDelete = ref(false);
@@ -224,7 +232,10 @@ const deleteItem = (item) => {
 const deleteItemConfirm = () => {
     $fetch(URL_SERVER + `consulta/${consulta.value.id}`, {
         method: 'DELETE',
-        body: JSON.stringify(consulta.value)
+        body: JSON.stringify(consulta.value),
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     })
         .then((response) => {
             typeAlert.value = "success";
@@ -278,7 +289,10 @@ const save = () => {
     if (editedIndex.value > -1) {
         $fetch(URL_SERVER + `consulta/${consulta.value.id}`, {
             method: 'PUT',
-            body: JSON.stringify(bodyRequest)
+            body: JSON.stringify(bodyRequest),
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
             .then((response) => {
                 typeAlert.value = "success";
@@ -299,7 +313,10 @@ const save = () => {
     } else {
         $fetch(URL_SERVER + 'consulta', {
             method: 'POST',
-            body: JSON.stringify(bodyRequest)
+            body: JSON.stringify(bodyRequest),
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
             .then((response) => {
                 typeAlert.value = "success";
@@ -322,7 +339,15 @@ const save = () => {
 };
 
 async function updateItemList() {
-    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'consulta/todos/' + idosoId));
+    const { data } = await useAsyncData('', async () => {
+        const resp = await $fetch(URL_SERVER + 'consulta/todos/' + idosoId, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return resp;
+    });
 
     desserts.value = [];
     data.value.forEach(element => {

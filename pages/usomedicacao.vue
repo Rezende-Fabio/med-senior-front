@@ -1,7 +1,7 @@
 <template>
-    <Sidebar/>
+    <Sidebar />
     <v-main>
-        <Appbar/>
+        <Appbar />
         <div class="div-main">
             <div class="d-flex flex-column mb-6">
                 <v-sheet class="ma-2 pa-2">
@@ -36,10 +36,8 @@
                                                 <v-col>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-autocomplete v-model="usoMedicacao.medId"
-                                                        label="Nome do Medicamento"
-                                                        :items="items"
-                                                        item-title="nome"
-                                                        item-value="id"></v-autocomplete>
+                                                            label="Nome do Medicamento" :items="items" item-title="nome"
+                                                            item-value="id"></v-autocomplete>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
                                                         <v-text-field v-model="usoMedicacao.dosagem" type="number" min="1"
@@ -50,8 +48,8 @@
                                                             label="Intervalo de horas"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
-                                                        <v-text-field v-model="usoMedicacao.horaInicial" messages="Formato: hh:mm"
-                                                            :rules="[rules.time]"
+                                                        <v-text-field v-model="usoMedicacao.horaInicial"
+                                                            messages="Formato: hh:mm" :rules="[rules.time]"
                                                             label="Hora do primeiro consumo"></v-text-field>
                                                     </v-row>
                                                     <v-row cols="12" sm="6" md="4">
@@ -141,19 +139,32 @@ const URL_SERVER = "http://localhost:5000/";
 
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
+const token = useCookie("access_token").value
 
-const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + idosoId));
+const { data } = await useAsyncData('', async () => {
+    const resp = await $fetch(URL_SERVER + 'medicacao/uso/todos/' + idosoId, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    return resp;
+});
 
 const nomesMedicamento = async () => {
-    const names = await $fetch(URL_SERVER + 'medicacao/todos/' + idosoId)
+    const names = await $fetch(URL_SERVER + 'medicacao/todos/' + idosoId, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
         .then((response) => {
             const infos = [];
 
             response.forEach(el => {
                 const data = {
                     id: el.id,
-                    nome: el.nome 
-                } 
+                    nome: el.nome
+                }
 
                 infos.push(data);
             });
@@ -250,9 +261,12 @@ const deleteItem = (item) => {
 
 const deleteItemConfirm = () => {
     $fetch(URL_SERVER + `medicacao/uso/${usoMedicacao.value.id}`, {
-         method: 'DELETE',
-         body: JSON.stringify(usoMedicacao.value)
-     })
+        method: 'DELETE',
+        body: JSON.stringify(usoMedicacao.value),
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
         .then((response) => {
             typeAlert.value = "success";
             titleAtlert.value = "Sucesso";
@@ -302,51 +316,65 @@ const save = () => {
     if (editedIndex.value > -1) {
         $fetch(URL_SERVER + `medicacao/uso/${usoMedicacao.value.id}`, {
             method: 'PUT',
-            body: JSON.stringify(usoMedicacao.value)
+            body: JSON.stringify(usoMedicacao.value),
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
-        .then((response) => {
-            typeAlert.value = "success";
-            titleAtlert.value = "Sucesso";
-            textAlert.value = "Agendamento alterado com sucesso!";
-            alert.value = true;
-            dismissAlert();
-            updateItemList();
-        })
-        .catch((error) => {
-            typeAlert.value = "error";
-            titleAtlert.value = "Erro";
-            textAlert.value = "Não foi possível alterar o agendamento!";
-            alert.value = true;
-            console.error(error);
-            dismissAlert();
-        });
+            .then((response) => {
+                typeAlert.value = "success";
+                titleAtlert.value = "Sucesso";
+                textAlert.value = "Agendamento alterado com sucesso!";
+                alert.value = true;
+                dismissAlert();
+                updateItemList();
+            })
+            .catch((error) => {
+                typeAlert.value = "error";
+                titleAtlert.value = "Erro";
+                textAlert.value = "Não foi possível alterar o agendamento!";
+                alert.value = true;
+                console.error(error);
+                dismissAlert();
+            });
     } else {
         $fetch(URL_SERVER + 'medicacao/uso', {
             method: 'POST',
-            body: JSON.stringify(usoMedicacao.value)
+            body: JSON.stringify(usoMedicacao.value),
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
-        .then((response) => {
-            typeAlert.value = "success";
-            titleAtlert.value = "Sucesso";
-            textAlert.value = "Agendamento incluido com sucesso!";
-            alert.value = true;
-            dismissAlert();
-            updateItemList();
-        })
-        .catch((error) => {
-            typeAlert.value = "error";
-            titleAtlert.value = "Erro";
-            textAlert.value = "Não foi possível incluir o agendamento!";
-            alert.value = true;
-            console.error(error);
-            dismissAlert();
-        });
+            .then((response) => {
+                typeAlert.value = "success";
+                titleAtlert.value = "Sucesso";
+                textAlert.value = "Agendamento incluido com sucesso!";
+                alert.value = true;
+                dismissAlert();
+                updateItemList();
+            })
+            .catch((error) => {
+                typeAlert.value = "error";
+                titleAtlert.value = "Erro";
+                textAlert.value = "Não foi possível incluir o agendamento!";
+                alert.value = true;
+                console.error(error);
+                dismissAlert();
+            });
     }
     close();
 };
 
 async function updateItemList() {
-    const { data } = await useAsyncData('', () => $fetch(URL_SERVER + 'medicacao/uso/todos/' + idosoId));
+    const { data } = await useAsyncData('', async () => {
+        const resp = await $fetch(URL_SERVER + 'medicacao/uso/todos/' + idosoId, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return resp;
+    });
 
     desserts.value = [];
     data.value.forEach(element => {
