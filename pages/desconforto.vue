@@ -75,6 +75,8 @@ async function save() {
     let data;
     const cookie = useCookie('idUsuario');
     const idosoId = cookie.value;
+    const token = useCookie("access_token").value;
+
     if (sintoma.value == null) {
         showAlert("warning", "Alerta", "Selecione um sintoma!");
     } else {
@@ -88,6 +90,7 @@ async function save() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
             },
             body: JSON.stringify(data)
         });

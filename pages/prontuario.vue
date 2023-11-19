@@ -69,6 +69,7 @@ const URL_SERVER = "http://localhost:5000/";
 
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
+const token = useCookie("access_token").value
 
 
 const idosoInfos = ref({});
@@ -83,7 +84,11 @@ const searhMedicineName = (medId, medicines) => {
 }
 
 const initialize = async () => {
-    const res = await fetch(URL_SERVER + 'idoso/' + idosoId);
+    const res = await fetch(URL_SERVER + 'idoso/' + idosoId, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    });
     const data = await res.json()
 
     idosoInfos.value = {
