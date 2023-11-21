@@ -1,7 +1,7 @@
 <template>
     <Sidebar />
     <v-main>
-        <Appbar/>
+        <Appbar />
         <div class="div-main-home">
             <NuxtLink to="/medicamentos" class="card">
                 <div class="icon">
@@ -26,6 +26,35 @@
 <script setup>
 import Sidebar from '../components/sidebar.vue';
 import Appbar from '../components/appbar.vue';
+
+const token = useCookie("access_token").value
+
+window.Notification.requestPermission();
+
+navigator.serviceWorker.register('serviceWorker.js')
+    .then(async (service) => {
+        let sub = await service.pushManager.getSubscription();
+
+        if (!sub) {
+            const { data } = await $fetch("http://localhost:5000/notifications/token");
+
+            sub = await service.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: data
+            });
+
+            console.log(sub);
+
+            await $fetch("http://localhost:5000/notifications/register", {
+                method: 'POST',
+                body: sub,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+        }
+    });
+
 </script>
 
 <style>
