@@ -19,6 +19,11 @@
                                 <v-spacer></v-spacer>
                                 <v-dialog v-model="dialog" max-width="500px">
                                     <template v-slot:activator="{ props }">
+                                        <NuxtLink to="/consumo" class="link-home">
+                                            <v-btn class="mb-2 btn-new-estoque">
+                                                Registrar Consumo
+                                            </v-btn>
+                                        </NuxtLink>
                                         <v-btn class="mb-2 btn-new-estoque">
                                             Compra de Medicamento
                                         </v-btn>
