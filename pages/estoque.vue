@@ -16,7 +16,7 @@
                 </v-row>
                 <v-row cols="12" sm="6" md="4">
                     <v-col cols="5">
-                        <v-text-field v-model="medicacao.qtde" label="Quantidade"></v-text-field>
+                        <v-text-field type="number" v-model="medicacao.qtde" label="Quantidade"></v-text-field>
                     </v-col>
                 </v-row>
                 <v-row class="btns">
@@ -113,17 +113,16 @@ async function save() {
     } else if (medicacao.value.qtde == null) {
         showAlert("warning", "Alerta", "Informe uma quantidade!");
     } else {
-        const res = await fetch(URL_SERVER + `sintoma`, {
-            method: "POST",
+        const res = await fetch(URL_SERVER + `medicacao/${medicacao.value.id}/${parseInt(medicacao.value.qtde)}`, {
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify(data)
         });
 
         if (res.status == 201 || res.status == 200) {
-            showAlert("success", "Sucesso", "Sintoma incluido com sucesso!");
+            showAlert("success", "Sucesso", "Estoque incluido com sucesso!");
         }
 
         if (res.status == 400) {
