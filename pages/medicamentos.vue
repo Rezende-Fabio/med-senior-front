@@ -19,14 +19,11 @@
                                 <v-spacer></v-spacer>
                                 <v-dialog v-model="dialog" max-width="500px">
                                     <template v-slot:activator="{ props }">
-                                        <NuxtLink to="/consumo" class="link-home">
+                                        <NuxtLink to="/estoque" class="link-home">
                                             <v-btn class="mb-2 btn-new-estoque">
-                                                Registrar Consumo
+                                                Compra de Medicamento
                                             </v-btn>
                                         </NuxtLink>
-                                        <v-btn class="mb-2 btn-new-estoque">
-                                            Compra de Medicamento
-                                        </v-btn>
                                         <v-btn prepend-icon="mdi-plus" class="mb-2 btn-new" v-bind="props">
                                             <template v-slot:prepend>
                                                 <v-icon color="success"></v-icon>
@@ -38,7 +35,6 @@
                                         <v-card-title>
                                             <span class="text-h5">{{ formTitle }}</span>
                                         </v-card-title>
-
                                         <v-card-text>
                                             <v-container>
                                                 <v-col>

@@ -5,8 +5,8 @@
         <div v-if="alert === true" class="alert">
             <v-alert :type="typeAlert" :title="titleAtlert" :text="textAlert"></v-alert>
         </div>
-        <v-container class="container-desconforto">
-            <h3>Registrar Consumo:</h3>
+        <v-container class="container-stoque">
+            <h3>Registrar Estoque:</h3>
             <v-form @submit.prevent="save">
                 <v-row cols="12" sm="6" md="4">
                     <v-col>
@@ -20,7 +20,7 @@
                     </v-col>
                 </v-row>
                 <v-row class="btns">
-                    <v-btn type="submit">Resgistrar Consumo</v-btn>
+                    <v-btn type="submit">Adicionar ao Estoque</v-btn>
                 </v-row>
             </v-form>
         </v-container>
@@ -104,54 +104,48 @@ function showAlert(categoria, titulo, mensagem) {
 
 async function save() {
     let data;
-    console.log(medicacao.value);
-    // const cookie = useCookie('idUsuario');
-    // const idosoId = cookie.value;
-    // const token = useCookie("access_token").value;
+    const cookie = useCookie('idUsuario');
+    const idosoId = cookie.value;
+    const token = useCookie("access_token").value;
 
-    // if (sintoma.value == null) {
-    //     showAlert("warning", "Alerta", "Selecione um sintoma!");
-    // } else {
-    //     data = {
-    //         idosoId: idosoId,
-    //         descricao: sintoma.value,
-    //         ocorrencia: convertDateToDatetime(new Date().toLocaleDateString('pt-BR', options))
-    //     }
+    if (medicacao.value.id.toString().length == 0) {
+        showAlert("warning", "Alerta", "Selecione um medicamento!");
+    } else if (medicacao.value.qtde == null) {
+        showAlert("warning", "Alerta", "Informe uma quantidade!");
+    } else {
+        const res = await fetch(URL_SERVER + `sintoma`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
 
-    //     const res = await fetch(URL_SERVER + `sintoma`, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             Authorization: `Bearer ${token}`
-    //         },
-    //         body: JSON.stringify(data)
-    //     });
+        if (res.status == 201 || res.status == 200) {
+            showAlert("success", "Sucesso", "Sintoma incluido com sucesso!");
+        }
 
-    //     if (res.status == 201 || res.status == 200) {
-    //         showAlert("success", "Sucesso", "Sintoma incluido com sucesso!");
-    //     }
+        if (res.status == 400) {
+            showAlert("error", "Erro", "Alguma informação pode estar inválida, por favor tente novamente!");
+        }
 
-    //     if (res.status == 400) {
-    //         showAlert("error", "Erro", "Alguma informação pode estar inválida, por favor tente novamente!");
-    //     }
-
-    //     if (res.status == 500) {
-    //         showAlert("error", "Erro", "Houve um erro ao processar sua solicitação, tente novamente mais tarde!");
-    //     }
-    // }
+        if (res.status == 500) {
+            showAlert("error", "Erro", "Houve um erro ao processar sua solicitação, tente novamente mais tarde!");
+        }
+    }
 }
-
 </script>
 
 <style>
-.container-desconforto {
+.container-stoque {
     border: 1px solid #000000 !important;
     padding: 25px !important;
-    margin-top: 1.2rem !important;
+    margin-top: 2.2rem !important;
     border-radius: 15px !important;
 }
 
-.container-desconforto h3 {
+.container-stoque h3 {
     margin-bottom: 1rem;
 }
 
