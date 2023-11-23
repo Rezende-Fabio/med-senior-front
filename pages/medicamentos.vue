@@ -19,9 +19,11 @@
                                 <v-spacer></v-spacer>
                                 <v-dialog v-model="dialog" max-width="500px">
                                     <template v-slot:activator="{ props }">
-                                        <v-btn class="mb-2 btn-new-estoque">
-                                            Compra de Medicamento
-                                        </v-btn>
+                                        <NuxtLink to="/estoque" class="link-home">
+                                            <v-btn class="mb-2 btn-new-estoque">
+                                                Compra de Medicamento
+                                            </v-btn>
+                                        </NuxtLink>
                                         <v-btn prepend-icon="mdi-plus" class="mb-2 btn-new" v-bind="props">
                                             <template v-slot:prepend>
                                                 <v-icon color="success"></v-icon>
@@ -33,7 +35,6 @@
                                         <v-card-title>
                                             <span class="text-h5">{{ formTitle }}</span>
                                         </v-card-title>
-
                                         <v-card-text>
                                             <v-container>
                                                 <v-col>
@@ -127,8 +128,6 @@ import Appbar from '../components/appbar.vue';
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
 const token = useCookie("access_token").value;
-
-console.log(idosoId);
 
 const { data } = await useAsyncData('', async () => {
     const resp = await $fetch(URL_SERVER + 'medicacao/todos/' + idosoId, {

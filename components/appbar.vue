@@ -1,15 +1,24 @@
 <template>
     <v-app-bar :elevation="7">
-        <NuxtLink to="/desconforto" class="link-home">
-            <v-btn prepend-icon="mdi-emoticon-sick-outline" class="btn-desconforto">
-                Está com algum desconforto?
-            </v-btn>
-        </NuxtLink>
-        <NuxtLink to="/desconforto" class="link-home">
-            <v-btn prepend-icon="mdi-phone" class="btn-emergencia">
-                Emergência
-            </v-btn>
-        </NuxtLink>
+        <div class="div-sair">
+            <NuxtLink to="/" class="link-home">
+                <v-btn prepend-icon="mdi-exit-to-app" class="btn-emergencia">
+                    Sair
+                </v-btn>
+            </NuxtLink>
+        </div>
+        <div class="btns">
+            <NuxtLink to="/desconforto" class="link-home">
+                <v-btn prepend-icon="mdi-emoticon-sick-outline" class="btn-desconforto">
+                    Está com algum desconforto?
+                </v-btn>
+            </NuxtLink>
+            <NuxtLink to="/desconforto" class="link-home">
+                <v-btn prepend-icon="mdi-phone" class="btn-emergencia">
+                    Emergência
+                </v-btn>
+            </NuxtLink>
+        </div>
     </v-app-bar>
 </template>
 
@@ -23,21 +32,24 @@ export default {
 </script>
 
 <style>
-.v-toolbar__content {
+.btns {
     display: flex !important;
     justify-content: flex-end !important;
-    width: 100% !important;    
+    width: 100% !important;
 }
 
-.btn-desconforto{
+.div-sair{
+    margin-left: 1rem;
+}
+
+.btn-desconforto {
     background-color: #F0F0F0;
     font-weight: bold;
     margin-right: 10px;
 }
 
-.btn-emergencia{
+.btn-emergencia {
     background-color: #b81414;
     color: white;
 }
-
 </style>

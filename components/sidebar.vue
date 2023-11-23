@@ -11,8 +11,16 @@
                 </div>
             </NuxtLink>
         </v-list-item>
-        <v-list style="height: 40%;" class="d-flex flex-column justify-space-between" nav>
-            <NuxtLink to="/medicamentos">
+        <v-list style="height: 55%;" class="d-flex flex-column justify-space-between" nav>
+            <NuxtLink to="/home">
+                <div class="link-item">
+                    <div class="icon-item">
+                        <v-icon icon="mdi-home" size="x-large"></v-icon>
+                    </div>
+                    <span class="text-item">HOME</span>
+                </div> 
+            </NuxtLink>
+            <NuxtLink to="/homeMedicamentos">
                 <div class="link-item">
                     <div class="icon-item">
                         <v-icon icon="mdi-pill" size="x-large"></v-icon>
