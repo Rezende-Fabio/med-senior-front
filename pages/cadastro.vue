@@ -142,7 +142,7 @@ export default {
 
             if (res.status == 201) {
                 alert("Cadastro realizado com sucesso");
-                this.$router.push("/index");
+                this.$router.push("/");
             }
 
             if (res.status == 400) {

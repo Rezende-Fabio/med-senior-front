@@ -20,7 +20,7 @@
                     <span class="text-item">HOME</span>
                 </div> 
             </NuxtLink>
-            <NuxtLink to="/medicamentos">
+            <NuxtLink to="/homeMedicamentos">
                 <div class="link-item">
                     <div class="icon-item">
                         <v-icon icon="mdi-pill" size="x-large"></v-icon>
