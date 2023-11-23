@@ -2,6 +2,9 @@
     <Sidebar />
     <v-main>
         <Appbar />
+        <div v-if="alert === true" class="alert">
+            <v-alert :type="typeAlert" :title="titleAtlert" :text="textAlert"></v-alert>
+        </div>
         <v-container class="container-desconforto">
             <h3>Remédios do dia</h3>
             <v-table>
@@ -23,7 +26,7 @@
                         <td>{{ item.nome }}</td>
                         <td>{{ item.hora }}</td>
                         <td>
-                            <v-btn variant="tonal">
+                            <v-btn variant="tonal" @click="registrarConsumo(item.idMed, item.qtde)">
                                 Registrar consumo
                             </v-btn>
                         </td>
@@ -74,6 +77,10 @@ const URL_SERVER = "http://localhost:5000/";
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
 const token = useCookie("access_token").value
+const titleAtlert = ref("");
+const textAlert = ref("");
+const typeAlert = ref("");
+const alert = ref(false);
 
 const nomesMedicamento = async () => {
     const medicamentos = await $fetch(URL_SERVER + 'medicacao/uso/dia/' + idosoId, {
@@ -86,8 +93,10 @@ const nomesMedicamento = async () => {
 
             response.forEach(el => {
                 const data = {
+                    idMed: el.medicacao.id,
                     nome: el.medicacao.nome,
-                    hora: convertDateTimeToTime(el.tomar)
+                    hora: convertDateTimeToTime(el.tomar),
+                    qtde: el.dosagem,
                 }
 
                 infos.push(data);
@@ -109,7 +118,6 @@ const consultasMarcadas = async () => {
             const infos = [];   
 
             response.forEach(el => {
-                console.log(el.dataHoraConsulta);
                 const data = {
                     data: convertDateTimeToDate(el.dataHoraConsulta),
                     hora: convertDateTimeToTime(el.dataHoraConsulta),
@@ -129,6 +137,47 @@ const consultasMarcadas = async () => {
 
 const medicamentos = await nomesMedicamento();
 const consultas = await consultasMarcadas();
+
+function dismissAlert() {
+    setTimeout(() => {
+        typeAlert.value = "";
+        titleAtlert.value = "";
+        textAlert.value = "";
+        alert.value = false;
+    }, 5000);
+}
+
+function showAlert(categoria, titulo, mensagem) {
+    alert.value = true;
+    typeAlert.value = categoria;
+    titleAtlert.value = titulo;
+    textAlert.value = mensagem;
+    dismissAlert();
+}
+
+async function registrarConsumo(idMed, qtde) {
+    const token = useCookie("access_token").value;
+    
+    const res = await fetch(URL_SERVER + `medicacao/uso/${idMed}/${parseInt(qtde)}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+    });
+
+    if (res.status == 201 || res.status == 200) {
+        showAlert("success", "Sucesso", "Consumo incluido com sucesso!");
+    }
+
+    if (res.status == 404) {
+        showAlert("error", "Erro", "Não existe estoque para o medicamento!");
+    }
+
+    if (res.status == 500) {
+        showAlert("error", "Erro", "Houve um erro ao processar sua solicitação, tente novamente mais tarde!");
+    }
+}
 </script>
 
 <style>

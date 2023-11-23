@@ -103,7 +103,6 @@ function showAlert(categoria, titulo, mensagem) {
 }
 
 async function save() {
-    let data;
     const cookie = useCookie('idUsuario');
     const idosoId = cookie.value;
     const token = useCookie("access_token").value;
