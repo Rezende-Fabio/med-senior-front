@@ -139,8 +139,6 @@ const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
 const token = useCookie("access_token").value
 
-console.log(idosoId);
-console.log(token);
 
 const { data } = await useAsyncData('', async () => {
     const resp = await $fetch(URL_SERVER + 'consulta/todos/' + idosoId, {
