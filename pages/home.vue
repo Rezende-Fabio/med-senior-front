@@ -76,7 +76,7 @@ const URL_SERVER = "http://localhost:5000/";
 
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
-const token = useCookie("access_token").value
+const token = useCookie("access_token").value;
 const titleAtlert = ref("");
 const textAlert = ref("");
 const typeAlert = ref("");
@@ -186,7 +186,11 @@ navigator.serviceWorker.register('serviceWorker.js')
         let sub = await service.pushManager.getSubscription();
 
         if (!sub) {
-            const { data } = await $fetch("http://localhost:5000/notifications/token");
+            const { data } = await $fetch("http://localhost:5000/notificacao/token", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             sub = await service.pushManager.subscribe({
                 userVisibleOnly: true,
@@ -195,7 +199,7 @@ navigator.serviceWorker.register('serviceWorker.js')
 
             console.log(sub);
 
-            await $fetch("http://localhost:5000/notifications/register", {
+            await $fetch("http://localhost:5000/notificacao/register" + idosoId, {
                 method: 'POST',
                 body: sub,
                 headers: {

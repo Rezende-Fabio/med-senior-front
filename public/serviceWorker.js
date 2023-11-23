@@ -5,5 +5,5 @@ self.addEventListener('push', function(event) {
         self.registration.showNotification('MedSenior', {
             body: text
         })
-    )
-})
+    );
+});
