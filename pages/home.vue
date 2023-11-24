@@ -70,13 +70,12 @@
 import Sidebar from '../components/sidebar.vue';
 import Appbar from '../components/appbar.vue';
 import { convertDateTimeToTime } from "~/utils/convertDateTimeToTime";
-import { convertDateToDatetime } from "~/utils/convertDateToDateTime";
 
 const URL_SERVER = "http://localhost:5000/";
 
 const cookie = useCookie('idUsuario');
 const idosoId = cookie.value;
-const token = useCookie("access_token").value
+const token = useCookie("access_token").value;
 const titleAtlert = ref("");
 const textAlert = ref("");
 const typeAlert = ref("");
@@ -115,7 +114,7 @@ const consultasMarcadas = async () => {
         }
     })
         .then((response) => {
-            const infos = [];   
+            const infos = [];
 
             response.forEach(el => {
                 const data = {
@@ -157,7 +156,7 @@ function showAlert(categoria, titulo, mensagem) {
 
 async function registrarConsumo(idMed, qtde) {
     const token = useCookie("access_token").value;
-    
+
     const res = await fetch(URL_SERVER + `medicacao/uso/${idMed}/${parseInt(qtde)}`, {
         method: "PATCH",
         headers: {
@@ -178,6 +177,39 @@ async function registrarConsumo(idMed, qtde) {
         showAlert("error", "Erro", "Houve um erro ao processar sua solicitação, tente novamente mais tarde!");
     }
 }
+
+function upNotificationsSetup() {
+    window.Notification.requestPermission();
+
+    navigator.serviceWorker.register('serviceWorker.js')
+        .then(async (service) => {
+            let sub = await service.pushManager.getSubscription();
+
+            if (!sub) {
+                const data = await $fetch("http://localhost:5000/notificacao/token", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                sub = await service.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: data
+                });
+
+                await $fetch("http://localhost:5000/notificacao/register/" + idosoId, {
+                    method: 'POST',
+                    body: sub,
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            }
+        });
+}
+
+upNotificationsSetup();
+
 </script>
 
 <style>
