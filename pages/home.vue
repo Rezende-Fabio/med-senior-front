@@ -1,7 +1,7 @@
 <template>
     <Sidebar />
     <v-main>
-        <Appbar  />
+        <Appbar />
         <div v-if="alert === true" class="alert">
             <v-alert :type="typeAlert" :title="titleAtlert" :text="textAlert"></v-alert>
         </div>
@@ -70,7 +70,6 @@
 import Sidebar from '../components/sidebar.vue';
 import Appbar from '../components/appbar.vue';
 import { convertDateTimeToTime } from "~/utils/convertDateTimeToTime";
-import { convertDateToDatetime } from "~/utils/convertDateToDateTime";
 
 const URL_SERVER = "http://localhost:5000/";
 
@@ -115,7 +114,7 @@ const consultasMarcadas = async () => {
         }
     })
         .then((response) => {
-            const infos = [];   
+            const infos = [];
 
             response.forEach(el => {
                 const data = {
@@ -157,7 +156,7 @@ function showAlert(categoria, titulo, mensagem) {
 
 async function registrarConsumo(idMed, qtde) {
     const token = useCookie("access_token").value;
-    
+
     const res = await fetch(URL_SERVER + `medicacao/uso/${idMed}/${parseInt(qtde)}`, {
         method: "PATCH",
         headers: {
@@ -179,35 +178,37 @@ async function registrarConsumo(idMed, qtde) {
     }
 }
 
-window.Notification.requestPermission();
+function upNotificationsSetup() {
+    window.Notification.requestPermission();
 
-navigator.serviceWorker.register('serviceWorker.js')
-    .then(async (service) => {
-        let sub = await service.pushManager.getSubscription();
+    navigator.serviceWorker.register('serviceWorker.js')
+        .then(async (service) => {
+            let sub = await service.pushManager.getSubscription();
 
-        if (!sub) {
-            const { data } = await $fetch("http://localhost:5000/notificacao/token", {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            if (!sub) {
+                const data = await $fetch("http://localhost:5000/notificacao/token", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-            sub = await service.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: data
-            });
+                sub = await service.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: data
+                });
 
-            console.log(sub);
+                await $fetch("http://localhost:5000/notificacao/register/" + idosoId, {
+                    method: 'POST',
+                    body: sub,
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            }
+        });
+}
 
-            await $fetch("http://localhost:5000/notificacao/register" + idosoId, {
-                method: 'POST',
-                body: sub,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-        }
-    });
+upNotificationsSetup();
 
 </script>
 
