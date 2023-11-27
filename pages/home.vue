@@ -178,37 +178,39 @@ async function registrarConsumo(idMed, qtde) {
     }
 }
 
-function upNotificationsSetup() {
-    window.Notification.requestPermission();
+window.Notification.requestPermission();
 
-    navigator.serviceWorker.register('serviceWorker.js')
-        .then(async (service) => {
-            let sub = await service.pushManager.getSubscription();
+navigator.serviceWorker.register('serviceWorker.js')
+    .then(async (service) => {
+        let sub = await service.pushManager.getSubscription();
 
-            if (!sub) {
-                const data = await $fetch("http://localhost:5000/notificacao/token", {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+        if (!sub) {
+            const data = await $fetch("http://localhost:5000/notificacao/token", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
-                sub = await service.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: data
-                });
+            console.log("token - ", data);
 
-                await $fetch("http://localhost:5000/notificacao/register/" + idosoId, {
-                    method: 'POST',
-                    body: sub,
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-            }
-        });
-}
+            sub = await service.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: data
+            });
 
-upNotificationsSetup();
+            console.log("Sub - ", sub);
+
+            const data2 = await $fetch("http://localhost:5000/notificacao/register/" + idosoId, {
+                method: 'POST',
+                body: sub,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log(data2);
+        }
+    });
 
 </script>
 

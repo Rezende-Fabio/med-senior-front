@@ -10,4 +10,4 @@ EXPOSE 3000
 
 COPY . .
 
-CMD npm run build && node .output/server/index.mjs
+CMD npm run dev
