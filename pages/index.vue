@@ -64,7 +64,7 @@ export default {
                 const token = useCookie('access_token')
 
                 userId.value = resp.data.idUsuario;
-                token.value = resp.data.access_token;
+                token.value = resp.data.access_token; 
 
                 this.$router.push("/home");
             } else {
